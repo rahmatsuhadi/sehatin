@@ -41,7 +41,7 @@ export default function ScanPage() {
           <Link
             href={{
               pathname: "/scan/result",
-              query: { img: capturedImage },
+              //   query: { img: capturedImage },
             }}
             className="bg-primary text-white w-full py-3 rounded-xl text-center font-bold block active:scale-95 transition"
           >

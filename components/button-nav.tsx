@@ -19,7 +19,7 @@ export default function ButtonNav() {
     { label: "Home", path: "/", icon: faHome },
     { label: "Stats", path: "/stats", icon: faChartPie },
     { label: "Scan", path: "/scan", icon: faCamera },
-    { label: "Info", path: "/info", icon: faBookOpen },
+    { label: "Info", path: "/library", icon: faBookOpen },
     { label: "Chat", path: "/chat", icon: faComments },
   ];
 
