@@ -75,7 +75,7 @@ export default function ModalContainer() {
 
   // 3. Logika Penyimpanan Data Awal (DataModal)
   const handleSaveUserData = useCallback(
-    (data: UserData) => {
+    (data: unknown) => {
       localStorage.setItem("user-data", JSON.stringify(data));
       setOpenDataModal(false);
 
@@ -130,7 +130,7 @@ export default function ModalContainer() {
       <DailyCheckinModal
         open={openDailyModal}
         onClose={() => setOpenDailyModal(false)}
-        onSave={handleDailySave}
+        onSave={(v) => handleDailySave({ weight: v })}
       />
     </>
   );
