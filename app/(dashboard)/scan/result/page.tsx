@@ -1,11 +1,11 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+// import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 
 export default function ScanResultPage() {
-  const params = useSearchParams();
-  const img = params.get("img");
+  //   const params = useSearchParams();
+  //   const img = params.get("img");
 
   return (
     <div className="px-5 pt-24 pb-20 max-w-xl mx-auto">
@@ -13,7 +13,7 @@ export default function ScanResultPage() {
         Hasil Analisis
       </h1>
 
-      {img && (
+      {/* {img && (
         <div className="rounded-2xl overflow-hidden shadow-lg mb-6">
           <Image
             src={img}
@@ -23,7 +23,7 @@ export default function ScanResultPage() {
             className="w-full h-auto"
           />
         </div>
-      )}
+      )} */}
 
       <p className="text-gray-600 dark:text-gray-300 text-sm">
         (Di sini nanti tampil hasil analisis AI)
