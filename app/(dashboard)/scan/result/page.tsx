@@ -1,6 +1,5 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Radar } from "react-chartjs-2";
@@ -23,7 +22,6 @@ ChartJS.register(
 );
 
 export default function ScanResultPage() {
-  const params = useSearchParams();
   const img =
     "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT9eA750ToXsXF9xzZr4cnCbLaNui6Q_55IdA&s";
 
