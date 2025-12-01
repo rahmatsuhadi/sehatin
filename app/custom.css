@@ -1,0 +1,84 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap");
+body {
+  font-family: "Poppins", sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+.glass-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(229, 231, 235, 0.5);
+}
+.dark .glass-card {
+  background: rgba(30, 41, 59, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.input-group input,
+.input-group select {
+  width: 100%;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+.input-group input:focus,
+.input-group select:focus {
+  border-color: #58cc02;
+  background: #fff;
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(88, 204, 2, 0.1);
+}
+.dark .input-group input,
+.dark .input-group select {
+  background: #334155;
+  border-color: #475569;
+  color: white;
+}
+.btn-press {
+  transition: transform 0.1s;
+}
+.btn-press:active {
+  transform: scale(0.96);
+}
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.hide-scroll::-webkit-scrollbar {
+  display: none;
+}
+.auth-bg {
+  background-image: radial-gradient(#58cc02 0.8px, transparent 0.8px);
+  background-size: 24px 24px;
+}
+.dark .auth-bg {
+  background-image: radial-gradient(#334155 0.8px, transparent 0.8px);
+}
+.mascot-avatar {
+  font-size: 2.5rem;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+}
+
+/* Digital Nutrition Specifics */
+.nutri-grade-A {
+  background: #038d4a;
+  color: white;
+}
+.nutri-grade-B {
+  background: #86bc25;
+  color: white;
+}
+.nutri-grade-C {
+  background: #ffc800;
+  color: black;
+}
