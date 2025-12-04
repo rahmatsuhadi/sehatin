@@ -1,3 +1,4 @@
+import LoginForm from "@/components/auth/login-form";
 import Link from "next/link";
 
 export default function MasukPage() {
@@ -16,30 +17,7 @@ export default function MasukPage() {
             Digital Nutrition Platform
           </p>
         </div>
-        <div className="space-y-4 input-group">
-          <div>
-            <label className="text-xs font-bold text-gray-500 mb-1 ml-1">
-              Email
-            </label>
-            <input type="email" id="login-email" placeholder="nama@email.com" />
-          </div>
-          <div>
-            <label className="text-xs font-bold text-gray-500 mb-1 ml-1">
-              Password
-            </label>
-            <input
-              type="password"
-              id="login-pass"
-              placeholder="Password akun"
-            />
-          </div>
-          <button
-            //   onclick="handleLogin()"
-            className="w-full bg-linear-to-r from-primary to-green-500 text-white font-bold py-4 rounded-xl shadow-lg btn-press"
-          >
-            MASUK
-          </button>
-        </div>
+        <LoginForm />
         <p className="text-center mt-6 text-xs text-gray-500">
           Belum punya akun?
           <Link href={"/daftar"}>

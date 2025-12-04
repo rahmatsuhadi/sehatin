@@ -26,7 +26,7 @@ export default function ButtonNav() {
   return (
     <>
       {/* MOBILE BOTTOM NAV */}
-      <nav className="lg:hidden fixed bottom-0 w-full bg-white dark:bg-darkCard border-t border-gray-200 dark:border-gray-800 flex justify-around py-3 z-40 pb-6 md:pb-3 max-w-md mx-auto left-0 right-0 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)]">
+      <nav className="lg:hidden fixed bottom-0 w-full bg-white dark:bg-darkCard border-t border-gray-200 dark:border-gray-800 flex justify-around py-3 z-40 pb-6 md:pb-3  mx-auto left-0 right-0 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)]">
         {/* Loop items */}
         {items.map((item, index) => (
           <Link

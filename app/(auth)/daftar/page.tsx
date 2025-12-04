@@ -1,43 +1,6 @@
-"use client";
-
-import Link from "next/link";
-import { useState } from "react";
+import RegisterForm from "@/components/auth/register-form";
 
 export default function RegisterPage() {
-  const [loading, setLoading] = useState(false);
-
-  const handleRegister = () => {
-    setLoading(true);
-
-    const name = (document.getElementById("reg-name") as HTMLInputElement)
-      .value;
-    const email = (document.getElementById("reg-email") as HTMLInputElement)
-      .value;
-    const pass = (document.getElementById("reg-pass") as HTMLInputElement)
-      .value;
-    const conf = (
-      document.getElementById("reg-pass-confirm") as HTMLInputElement
-    ).value;
-
-    if (!name || !email || !pass || !conf) {
-      alert("Semua kolom wajib diisi!");
-      setLoading(false);
-      return;
-    }
-
-    if (pass !== conf) {
-      alert("Password tidak sama!");
-      setLoading(false);
-      return;
-    }
-
-    // Simulasi register
-    setTimeout(() => {
-      alert("Pendaftaran berhasil!");
-      setLoading(false);
-    }, 1200);
-  };
-
   return (
     <div
       className="
@@ -69,68 +32,7 @@ export default function RegisterPage() {
         </div>
 
         {/* Register Form */}
-        <div className="space-y-4 relative z-20">
-          <div className="input-group space-y-3">
-            {/* Fullname */}
-            <input
-              type="text"
-              id="reg-name"
-              placeholder="Nama Lengkap"
-              className="input-style"
-            />
-
-            {/* Email */}
-            <input
-              type="email"
-              id="reg-email"
-              placeholder="Email"
-              className="input-style"
-            />
-
-            {/* Password */}
-            <div>
-              <input
-                type="password"
-                id="reg-pass"
-                placeholder="Password (Min. 8 Karakter)"
-                className="input-style"
-              />
-              <p className="text-[10px] text-gray-400 mt-1 ml-1">
-                *Harus kombinasi huruf & angka
-              </p>
-            </div>
-
-            {/* Confirm Password */}
-            <input
-              type="password"
-              id="reg-pass-confirm"
-              placeholder="Konfirmasi Password"
-              className="input-style"
-            />
-
-            {/* Submit Button */}
-            <button
-              onClick={handleRegister}
-              disabled={loading}
-              className="
-                w-full bg-gradient-to-r from-secondary to-blue-500 text-white 
-                font-bold py-4 rounded-xl shadow-lg active:scale-[0.97] transition
-              "
-            >
-              {loading ? "Memproses..." : "DAFTAR AKUN"}
-            </button>
-          </div>
-
-          {/* Link to Login */}
-          <p className="text-center mt-6 text-xs text-gray-500">
-            Sudah punya akun?{" "}
-            <Link href={"/masuk"}>
-              <span className="text-secondary font-bold cursor-pointer">
-                Masuk
-              </span>
-            </Link>
-          </p>
-        </div>
+        <RegisterForm />
       </div>
     </div>
   );

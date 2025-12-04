@@ -10,12 +10,14 @@ export default function StatsPage() {
   const [weightInput, setWeightInput] = useState("");
   const [heightInput, setHeightInput] = useState("");
   const [history, setHistory] = useState<
-    { date: string; height: number; weight: number; bmi: number }[]
+    {
+      date: string;
+      height: number;
+      weight: number;
+      bmi: number;
+    }[]
   >([]);
 
-  // ======================
-  //  CHART.JS INIT
-  // ======================
   useEffect(() => {
     const ctx = document.getElementById("mainChart") as HTMLCanvasElement;
     if (!ctx) return;
@@ -44,15 +46,20 @@ export default function StatsPage() {
         ],
       },
       options: {
-        responsive: true,
-        maintainAspectRatio: false,
+        responsive: true, // Ensures the chart is responsive
+        maintainAspectRatio: false, // Prevents the aspect ratio from being maintained
+        scales: {
+          x: {
+            ticks: {
+              maxRotation: 0, // Prevent rotation of labels
+              minRotation: 0,
+            },
+          },
+        },
       },
     });
   }, [activeTab, period]);
 
-  // ===============================
-  //  SIMPAN RIWAYAT (Tinggi + Berat)
-  // ===============================
   const saveHistory = () => {
     if (!heightInput || !weightInput) return;
 
@@ -76,7 +83,7 @@ export default function StatsPage() {
   };
 
   return (
-    <div id="page-stats" className="page-section fade-in pb-20">
+    <div className=" fade-in pb-20">
       <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">
         Analisis Data
       </h2>
@@ -114,7 +121,7 @@ export default function StatsPage() {
           <select
             value={period}
             onChange={(e) => setPeriod(e.target.value)}
-            className="bg-white dark:bg-darkCard border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-1 text-xs font-bold"
+            className="bg-white dark:bg-darkCard border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-1 font-bold"
           >
             <option value="daily">Harian</option>
             <option value="weekly">Mingguan</option>
@@ -124,14 +131,23 @@ export default function StatsPage() {
       </div>
 
       {/* ============= CHART CONTAINER ============= */}
-      <div className="bg-white dark:bg-darkCard p-4 rounded-[2rem] shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
-        <div style={{ position: "relative", height: "250px", width: "100%" }}>
-          <canvas id="mainChart"></canvas>
+      <div className="bg-white dark:bg-darkCard p-4 rounded-4xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
+        <div
+          style={{
+            position: "relative",
+            width: "100%",
+            height: "100%", // Ensures height adjusts with the container
+          }}
+        >
+          <canvas
+            id="mainChart"
+            style={{ width: "100%", height: "100%" }}
+          ></canvas>
         </div>
       </div>
 
       {/* ============= INPUT BERAT BADAN ============= */}
-      <div className="bg-white dark:bg-darkCard p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
+      <div className="bg-white dark:bg-darkCard py-5 px-3 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
         <h3 className="font-bold text-sm mb-3 text-gray-500 uppercase">
           Input Berat Badan
         </h3>
@@ -139,18 +155,10 @@ export default function StatsPage() {
         <div className="flex flex-col gap-3">
           <input
             type="number"
-            placeholder="Tinggi (cm)"
-            value={heightInput}
-            onChange={(e) => setHeightInput(e.target.value)}
-            className="input-style border border-gray-200 px-3 py-2 rounded-lg"
-          />
-
-          <input
-            type="number"
             placeholder="Berat (kg)"
             value={weightInput}
             onChange={(e) => setWeightInput(e.target.value)}
-            className="input-style border border-gray-200 px-3 py-2 rounded-lg"
+            className="input-style border border-gray-200 p-2 rounded-lg"
           />
 
           <button

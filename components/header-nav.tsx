@@ -1,13 +1,35 @@
 "use client";
 
 import { Icon } from "@/components/ui/icon";
+import { useUser } from "@/service/auth";
 import { faLeaf, faMoon, faSun } from "@fortawesome/free-solid-svg-icons";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
+import { Skeleton } from "./ui/skeleton";
+import { useEffect, useState } from "react";
+import { getToken } from "@/lib/token-service";
+import DataModal from "./data-modal";
 
 export default function HeaderNav() {
   const { theme, setTheme } = useTheme();
+
+  const token = getToken();
+
+  const { data, isLoading, isError } = useUser();
+
+  useEffect(() => {
+    if ((!data?.data && isError && !isLoading) || !token) {
+      window.location.href = "/masuk";
+    }
+  }, [data?.data.user, isLoading]);
+
+  const fullName = data?.data?.user?.name || "";
+  const [firstname = "User", lastname = ""] = fullName.split(" ");
+  // Avatar generator
+  const avatarUrl = `https://avatar.iran.liara.run/username?username=${firstname}${
+    lastname ? "+" + lastname : ""
+  }`;
 
   const toggleDark = () => setTheme(theme === "dark" ? "light" : "dark");
 
@@ -75,21 +97,29 @@ export default function HeaderNav() {
         </button>
 
         {/* Avatar */}
-        <Link
-          href="/profile"
-          className="
+        {isLoading ? (
+          <Skeleton
+            className="rounded-full w-9 h-9 
+              md:w-10 md:h-10 
+              lg:w-12 lg:h-12"
+          />
+        ) : (
+          <Link
+            href="/profile"
+            className="
             overflow-hidden rounded-full border-2 border-primary 
             w-9 h-9 
             md:w-10 md:h-10 
             lg:w-12 lg:h-12
           "
-        >
-          <img
-            src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix"
-            alt="avatar"
-            className="w-full h-full object-cover"
-          />
-        </Link>
+          >
+            <img
+              src={avatarUrl}
+              alt="avatar"
+              className="w-full h-full object-cover"
+            />
+          </Link>
+        )}
       </div>
     </header>
   );

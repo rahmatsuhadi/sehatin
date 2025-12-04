@@ -54,6 +54,7 @@ body {
     transform: translateY(0);
   }
 }
+
 .hide-scroll::-webkit-scrollbar {
   display: none;
 }
@@ -81,4 +82,11 @@ body {
 .nutri-grade-C {
   background: #ffc800;
   color: black;
+}
+
+.error-message {
+  animation: fadeIn 0.5s ease-out forwards;
+  color: #f87171; /* Tailwind's red-400 for error */
+  font-size: 0.75rem; /* Smaller text for error */
+  margin-top: 4px; /* Add a little space between the input and error */
 }

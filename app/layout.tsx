@@ -6,6 +6,9 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { config } from "@fortawesome/fontawesome-svg-core";
 config.autoAddCss = false;
 import "@fortawesome/fontawesome-svg-core/styles.css";
+import ReactQueryProvider from "@/providers/ReactQueryProvider";
+import { Toaster } from "sonner";
+import ModalContainer from "@/components/container-modal";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -33,9 +36,12 @@ export default function RootLayout({
       <body
         className={`${poppins.variable} ${jetbrainsMono.variable} antialiased bg-surface text-gray-800 dark:bg-darkBg dark:text-gray-100 min-h-screen  transition-colors duration-300`}
       >
-        <ThemeProvider attribute="class" defaultTheme="light">
-          {children}
-        </ThemeProvider>
+        <ReactQueryProvider>
+          <ThemeProvider attribute="class" defaultTheme="light">
+            {children}
+            <Toaster richColors={false} closeButton={true} />
+          </ThemeProvider>
+        </ReactQueryProvider>
       </body>
     </html>
   );
