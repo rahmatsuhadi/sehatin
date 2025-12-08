@@ -1,6 +1,8 @@
 "use client";
 
-import { useUser } from "@/service/auth";
+import { customToast } from "@/lib/custom-toast";
+import { useUpdateProfile, useUser } from "@/service/auth";
+import { useQueryClient } from "@tanstack/react-query";
 import { use, useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 
@@ -15,6 +17,8 @@ type OnboardingInputs = {
 export default function OnboardingForm() {
   const { data } = useUser();
   const user = data?.data.user;
+
+  const { mutateAsync } = useUpdateProfile();
 
   const {
     reset,
@@ -44,19 +48,39 @@ export default function OnboardingForm() {
         birthDate: birthDate || "",
         height: user.height_cm || undefined,
         weight: user.current_weight_kg || undefined,
-        goal: "lose",
+        goal: user.goal_type,
       });
     }
   }, [user, reset]);
 
   const goal = watch("goal");
 
-  const onSubmit: SubmitHandler<OnboardingInputs> = (data) => {
-    // Simpan ke localStorage / API
-    localStorage.setItem("userProfile", JSON.stringify(data));
+  const queryClient = useQueryClient();
 
-    // Redirect ke dashboard
-    window.location.href = "/profile";
+  const onSubmit: SubmitHandler<OnboardingInputs> = async (data) => {
+    await mutateAsync(
+      {
+        credentials: {
+          birth_date: data.birthDate,
+          current_weight_kg: data.weight,
+          name: data.name,
+          height_cm: data.height,
+          goal_type: data.goal,
+        },
+      },
+      {
+        onSuccess() {
+          queryClient.invalidateQueries({ queryKey: ["user"] });
+          customToast("Profile data anda berhasil di perbarui !.", "success");
+        },
+        onError() {
+          customToast(
+            "Terjadi kesalahan saat memperbarui data profile.",
+            "error"
+          );
+        },
+      }
+    );
   };
 
   return (
