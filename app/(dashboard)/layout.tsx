@@ -26,7 +26,7 @@ export default function MainLayout({
         <div className="lg:hidden">
           <ButtonNav />
         </div>
-        {/* <ModalContainer /> */}
+        <ModalContainer />
       </div>
     </AuthGuard>
   );
