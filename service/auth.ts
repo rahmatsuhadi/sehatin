@@ -32,10 +32,18 @@ interface UpdateProfileData extends RegisterCredentials {
  * Data ini akan di-cache dan bisa diakses di seluruh aplikasi.
  */
 export const useUser = () => {
-  return useQuery<{ data: { user: User }; message: string }, Error>({
+  return useQuery<User, Error>({
     queryKey: ["user"], // Kunci unik untuk query ini
-    queryFn: () =>
-      apiClient<{ data: { user: User }; message: string }>("/auth/me"), // Fungsi API yang dipanggil
+    queryFn: async () => {
+      try {
+        const api = await apiClient<{ data: { user: User }; message: string }>(
+          "/auth/me"
+        ); // Fungsi API yang dipanggil
+        return api.data.user;
+      } catch (error) {
+        throw new Error("Gagal mengambil data user.");
+      }
+    },
     refetchOnWindowFocus: false,
     retry: false, // Jangan coba ulang jika gagal (misal, karena belum login)
   });

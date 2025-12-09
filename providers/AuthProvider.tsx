@@ -13,7 +13,7 @@ interface AuthGuardProps {
 export function AuthGuard({ children }: AuthGuardProps) {
   const { isLoading, data } = useUser();
 
-  const isAuthenticated = !!data?.data.user;
+  const isAuthenticated = !!data;
   useEffect(() => {
     const token = getToken();
 
@@ -38,7 +38,7 @@ export function AuthGuard({ children }: AuthGuardProps) {
     );
   }
 
-  if (!!!data?.data && !isLoading) {
+  if (!!!data && !isLoading) {
     return null;
   }
 

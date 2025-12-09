@@ -20,3 +20,11 @@ export interface User {
   created_at: string;
   updated_at: string;
 }
+
+//  Weight check-in interfaces
+
+export interface Weight {
+  weight_kg: number;
+  bmi: number;
+  created_at: string; // The date string from the API
+}

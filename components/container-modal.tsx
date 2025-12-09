@@ -53,7 +53,7 @@ export default function ModalContainer() {
   const [openDailyModal, setOpenDailyModal] = useState(false);
 
   const { data } = useUser();
-  const user = data?.data.user;
+  const user = data;
 
   // State untuk menampung log harian
   // const [dailyLogs, setDailyLogs] = useState<DailyLog[]>([]);

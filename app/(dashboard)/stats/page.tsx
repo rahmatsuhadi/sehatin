@@ -1,86 +1,168 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Chart from "chart.js/auto";
+import { useQuery } from "@tanstack/react-query";
+import { apiClient } from "@/lib/api-client";
+import { WeightForm } from "@/components/stats/weight-form";
+import { useUser } from "@/service/auth";
+
+interface Weight {
+  weight_kg: number;
+  bmi: number;
+  log_date: string;
+  created_at: string; // The date string from the API
+}
+
+interface HistoryEntry {
+  date: string;
+  height: number;
+  weight: number;
+  bmi: number;
+}
+
+interface MutationBody {
+  weight_kg: number;
+  log_date: string;
+}
+
+const getDateRange = () => {
+  const today = new Date();
+  const dateTo = today.toISOString().split("T")[0]; // Format YYYY-MM-DD for API date_to
+
+  const sevenDaysAgo = new Date(today);
+  sevenDaysAgo.setDate(today.getDate() - 7);
+  const dateFrom = sevenDaysAgo.toISOString().split("T")[0]; // Format YYYY-MM-DD for API date_from
+
+  return { dateFrom, dateTo };
+};
+
+const formatWeightDataForChart = (weightData: Weight[]) => {
+  const sortedData = [...weightData].sort(
+    (a, b) =>
+      new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+  );
+
+  const labels = sortedData.map((item) => {
+    const date = new Date(item.created_at);
+    // Use short format: DD/MM
+    return `${date.getDate().toString().padStart(2, "0")}/${(
+      date.getMonth() + 1
+    )
+      .toString()
+      .padStart(2, "0")}`;
+  });
+
+  const weights = sortedData.map((item) => item.weight_kg);
+
+  return { labels, weights };
+};
 
 export default function StatsPage() {
   const [activeTab, setActiveTab] = useState<"calorie" | "weight">("calorie");
-  const [period, setPeriod] = useState("daily");
+
+  const { dateFrom, dateTo } = useMemo(() => getDateRange(), []);
+
+  const { data: user } = useUser();
+
+  const {
+    data: weightData,
+    isLoading,
+    error,
+  } = useQuery<Weight[], Error>({
+    queryKey: ["weightHistory", dateFrom, dateTo],
+    queryFn: async () => {
+      try {
+        const limit = 100;
+        const api = await apiClient<{
+          data: { items: Weight[] };
+          message: string;
+        }>(`/weights?date_from=${dateFrom}&date_to=${dateTo}&limit=${limit}`);
+
+        return api.data.items;
+      } catch (e) {
+        throw new Error("Gagal mengambil data riwayat berat badan.");
+      }
+    },
+    refetchOnWindowFocus: true,
+  });
 
   const [weightInput, setWeightInput] = useState("");
   const [heightInput, setHeightInput] = useState("");
-  const [history, setHistory] = useState<
-    {
-      date: string;
-      height: number;
-      weight: number;
-      bmi: number;
-    }[]
-  >([]);
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
 
   useEffect(() => {
     const ctx = document.getElementById("mainChart") as HTMLCanvasElement;
     if (!ctx) return;
 
-    // Destroy previous chart instance
     if (Chart.getChart("mainChart")) {
       Chart.getChart("mainChart")?.destroy();
+    }
+
+    let chartLabels: string[];
+    let chartData: number[];
+    let chartLabel: string;
+
+    if (activeTab === "calorie") {
+      chartLabel = "Kalori";
+      // Data hardcoded untuk kalori
+      chartLabels = ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"];
+      chartData = [1800, 2000, 1750, 1900, 2100, 1600, 2200];
+    } else {
+      // activeTab === "weight"
+      chartLabel = "Berat Badan (kg)";
+
+      // FIX 3: Gunakan weightData yang sudah difetch
+      if (weightData && weightData.length > 0) {
+        const formatted = formatWeightDataForChart(weightData);
+        chartLabels = formatted.labels;
+        chartData = formatted.weights;
+      } else {
+        // Fallback
+        chartLabels = ["Tidak Ada Data"];
+        chartData = [0];
+      }
     }
 
     new Chart(ctx, {
       type: "line",
       data: {
-        labels: ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"],
+        labels: chartLabels,
         datasets: [
           {
-            label: activeTab === "calorie" ? "Kalori" : "Berat Badan",
-            data:
-              activeTab === "calorie"
-                ? [1800, 2000, 1750, 1900, 2100, 1600, 2200]
-                : [70, 69.8, 69.5, 69.2, 69.1, 69, 68.9],
+            label: chartLabel,
+            data: chartData,
             borderWidth: 3,
-            borderColor: "#58CC02",
+            borderColor: activeTab == "calorie" ? "#58CC02" : "#1CB0F6",
+            backgroundColor: activeTab == "calorie" ? "#58CC0220" : "#1CB0F620",
             tension: 0.4,
-            fill: false,
+            fill: true,
           },
         ],
       },
       options: {
-        responsive: true, // Ensures the chart is responsive
-        maintainAspectRatio: false, // Prevents the aspect ratio from being maintained
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
         scales: {
-          x: {
-            ticks: {
-              maxRotation: 0, // Prevent rotation of labels
-              minRotation: 0,
-            },
-          },
+          y: { grid: { display: false } },
+          x: { grid: { display: false } },
+          // x: {
+          //   ticks: {
+          //     maxRotation: 0,
+          //     minRotation: 0,
+          //   },
+          // },
         },
       },
     });
-  }, [activeTab, period]);
+    // FIX 4: Hapus 'period', tambahkan 'weightData'
+  }, [activeTab, weightData]);
 
-  const saveHistory = () => {
-    if (!heightInput || !weightInput) return;
-
-    const h = Number(heightInput);
-    const w = Number(weightInput);
-
-    const bmi = w / Math.pow(h / 100, 2);
-
-    setHistory((prev) => [
-      ...prev,
-      {
-        date: "Hari Ini",
-        height: h,
-        weight: w,
-        bmi: Number(bmi.toFixed(1)),
-      },
-    ]);
-
-    setHeightInput("");
-    setWeightInput("");
-  };
+  const isAlreadyInput = useMemo(() => {
+    const today = new Date().toISOString().split("T")[0];
+    return weightData?.some((item) => item.created_at.startsWith(today));
+  }, [weightData]);
 
   return (
     <div className=" fade-in pb-20">
@@ -116,12 +198,11 @@ export default function StatsPage() {
           </button>
         </div>
 
-        {/* PERIOD SELECT */}
+        {/* RIWAYAT TANGGAL YANG DIPANGGIL */}
         <div className="flex justify-end">
           <select
-            value={period}
-            onChange={(e) => setPeriod(e.target.value)}
-            className="bg-white dark:bg-darkCard border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-1 font-bold"
+            id="stat-period"
+            className="bg-white dark:bg-darkCard border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-1 text-xs font-bold"
           >
             <option value="daily">Harian</option>
             <option value="weekly">Mingguan</option>
@@ -132,63 +213,77 @@ export default function StatsPage() {
 
       {/* ============= CHART CONTAINER ============= */}
       <div className="bg-white dark:bg-darkCard p-4 rounded-4xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
+        {isLoading && activeTab === "weight" && (
+          <div className="text-center py-10">Memuat Data Berat Badan...</div>
+        )}
+        {error && activeTab === "weight" && (
+          <div className="text-center py-10 text-red-500">
+            Error: {error.message}
+          </div>
+        )}
         <div
           style={{
             position: "relative",
             width: "100%",
-            height: "100%", // Ensures height adjusts with the container
+            height:
+              activeTab === "weight" && (isLoading || error) ? "0" : "250px",
           }}
         >
-          <canvas
-            id="mainChart"
-            style={{ width: "100%", height: "100%" }}
-          ></canvas>
+          <canvas id="mainChart"></canvas>
         </div>
       </div>
 
-      {/* ============= INPUT BERAT BADAN ============= */}
       <div className="bg-white dark:bg-darkCard py-5 px-3 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
         <h3 className="font-bold text-sm mb-3 text-gray-500 uppercase">
           Input Berat Badan
         </h3>
 
-        <div className="flex flex-col gap-3">
-          <input
-            type="number"
-            placeholder="Berat (kg)"
-            value={weightInput}
-            onChange={(e) => setWeightInput(e.target.value)}
-            className="input-style border border-gray-200 p-2 rounded-lg"
-          />
-
-          <button
-            onClick={saveHistory}
-            className="bg-secondary text-white px-5 py-2 rounded-xl font-bold shadow-lg shadow-blue-500/30"
-          >
-            Simpan
-          </button>
-        </div>
+        <WeightForm onNewLog={() => {}} isAlreadyLogged={isAlreadyInput} />
       </div>
 
-      {/* ============= HISTORY ============= */}
       <h3 className="font-bold text-lg mb-3" id="history-title">
-        Riwayat
+        Riwayat Berat Badan
       </h3>
 
       <div id="history-list" className="space-y-2">
-        {history.map((item, idx) => (
-          <div
-            key={idx}
-            className="p-4 rounded-xl bg-white dark:bg-darkCard border border-gray-200 dark:border-gray-700"
-          >
-            <p className="font-bold">{item.date}</p>
-            <p className="text-sm">Tinggi: {item.height} cm</p>
-            <p className="text-sm">{item.weight} kg</p>
-            <p className="text-sm">BMI: {item.bmi}</p>
-          </div>
-        ))}
+        {weightData?.map((item, idx) => {
+          const isToday =
+            new Date(item.log_date).toDateString() ===
+            new Date().toDateString();
+          return (
+            <div
+              key={idx}
+              className="flex justify-between items-center p-3 bg-gray-50 dark:bg-slate-800 rounded-xl"
+            >
+              <div>
+                <p className="font-bold text-sm dark:text-white">
+                  {isToday
+                    ? "Hari Ini"
+                    : new Date(item.log_date).toLocaleDateString("id-ID")}
+                </p>
+                <p className="text-xs text-gray-500">
+                  Tinggi: {user?.height_cm || 0} cm
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="font-bold text-secondary">{item.weight_kg} kg</p>
+                <p className="text-xs text-gray-500">BMI: {item.bmi}</p>
+              </div>
+            </div>
+            // <div
+            //   key={`api-${idx}`}
+            //   className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
+            // >
+            //   <p className="font-bold">
+            //     {new Date(item.created_at).toLocaleDateString("id-ID")}
+            //   </p>
+            //   <p className="text-sm">{item.weight_kg} kg</p>
+            //   <p className="text-sm">BMI: {item.bmi}</p>
+            // </div>
+          );
+        })}
 
-        {history.length === 0 && (
+        {weightData?.length === 0 && history.length === 0 && (
           <p className="text-gray-500 text-sm">Belum ada riwayat.</p>
         )}
       </div>

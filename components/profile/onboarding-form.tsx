@@ -16,7 +16,7 @@ type OnboardingInputs = {
 
 export default function OnboardingForm() {
   const { data } = useUser();
-  const user = data?.data.user;
+  const user = data;
 
   const { mutateAsync } = useUpdateProfile();
 
@@ -96,9 +96,7 @@ export default function OnboardingForm() {
           {...register("name", { required: "Nama wajib diisi" })}
           className="mt-1 w-full px-4 py-3 rounded-xl bg-white dark:bg-darkCard border border-gray-200 dark:border-gray-700 dark:text-white focus:ring-2 ring-primary outline-none"
         />
-        {errors.name && (
-          <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>
-        )}
+        {errors.name && <p className="error-message">{errors.name.message}</p>}
       </div>
 
       {/* Tanggal Lahir */}
@@ -112,9 +110,7 @@ export default function OnboardingForm() {
           className="mt-1 w-full px-4 py-3 rounded-xl bg-white dark:bg-darkCard border border-gray-200 dark:border-gray-700 dark:text-white focus:ring-2 ring-primary outline-none"
         />
         {errors.birthDate && (
-          <p className="text-xs text-red-500 mt-1">
-            {errors.birthDate.message}
-          </p>
+          <p className="error-message">{errors.birthDate.message}</p>
         )}
       </div>
 
@@ -134,7 +130,7 @@ export default function OnboardingForm() {
           className="mt-1 w-full px-4 py-3 rounded-xl bg-white dark:bg-darkCard border border-gray-200 dark:border-gray-700 dark:text-white focus:ring-2 ring-primary outline-none"
         />
         {errors.height && (
-          <p className="text-xs text-red-500 mt-1">{errors.height.message}</p>
+          <p className="error-message">{errors.height.message}</p>
         )}
       </div>
 
@@ -154,7 +150,7 @@ export default function OnboardingForm() {
           className="mt-1 w-full px-4 py-3 rounded-xl bg-white dark:bg-darkCard border border-gray-200 dark:border-gray-700 dark:text-white focus:ring-2 ring-primary outline-none"
         />
         {errors.weight && (
-          <p className="text-xs text-red-500 mt-1">{errors.weight.message}</p>
+          <p className="error-message">{errors.weight.message}</p>
         )}
       </div>
 

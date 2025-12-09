@@ -1,6 +1,9 @@
 "use client";
 
+import GreetingCard from "@/components/dahboard/GreetingCard";
 import { Icon } from "@/components/ui/icon";
+import { apiClient } from "@/lib/api-client";
+import { useUser } from "@/service/auth";
 import {
   faFire,
   faDna,
@@ -9,24 +12,46 @@ import {
   faChevronRight,
   faUtensils,
 } from "@fortawesome/free-solid-svg-icons";
+import { useQuery } from "@tanstack/react-query";
+
+interface DailyTracking {
+  id: string;
+  log_date: string;
+  target_calories_kcal: number;
+  total_calories_kcal: number;
+  total_protein_g: number;
+  total_carbs_g: number;
+  total_fat_g: number;
+  total_fiber_g: number;
+  nutri_grade: "A" | "B" | "C" | "D" | "E" | "F";
+  calories_remaining: number;
+}
 
 export default function MainPage() {
+  const { data: user } = useUser();
+
+  const { data, isLoading, error } = useQuery<DailyTracking, Error>({
+    queryKey: ["dailyTracking"], // Use a more descriptive key, e.g., "dailyTracking"
+    queryFn: async () => {
+      try {
+        const api = await apiClient<{
+          data: { summary: DailyTracking };
+          message: string;
+        }>("/daily");
+
+        return api.data.summary;
+      } catch (e) {
+        throw new Error("Gagal mengambil data harian.");
+      }
+    },
+    refetchOnWindowFocus: true,
+  });
+
   return (
     <div className="page-section fade-in space-y-8 lg:space-y-10">
       {/* Top Greeting */}
       <div className="flex justify-between items-start">
-        <div>
-          <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">
-            Hai,
-            <span className="text-gray-900 dark:text-white font-bold">
-              {" "}
-              User!
-            </span>
-          </p>
-          <h2 className="text-2xl lg:text-3xl font-extrabold text-gray-800 dark:text-white">
-            Ayo Sehat! 🥑
-          </h2>
-        </div>
+        <GreetingCard />
 
         {/* Streak */}
         <div className="flex flex-col items-end">
@@ -63,12 +88,12 @@ export default function MainPage() {
           <div className="mt-3 flex gap-3">
             <div className="bg-white/20 backdrop-blur px-3 py-1.5 rounded-xl">
               <p className="text-[10px] opacity-75">Target Kalori</p>
-              <p className="font-bold">2000</p>
+              <p className="font-bold">{data?.target_calories_kcal || 0}</p>
             </div>
 
             <div className="bg-white/20 backdrop-blur px-3 py-1.5 rounded-xl">
               <p className="text-[10px] opacity-75">Berat Ideal</p>
-              <p className="font-bold">68 kg</p>
+              <p className="font-bold">{user?.ideal_weight_kg || 0} kg</p>
             </div>
           </div>
         </div>
@@ -86,7 +111,8 @@ export default function MainPage() {
             <span className="text-sm text-gray-400">Sisa Kalori Harian</span>
             <div className="flex items-baseline gap-1">
               <span className="text-4xl font-bold text-gray-800 dark:text-white">
-                0
+                {(data?.target_calories_kcal || 0) -
+                  (data?.total_calories_kcal || 0)}
               </span>
               <span className="text-sm text-gray-400">kkal</span>
             </div>
@@ -125,10 +151,22 @@ export default function MainPage() {
         {/* Macros */}
         <div className="grid grid-cols-3 gap-3">
           {[
-            { label: "Protein", bar: "bg-blue-400" },
-            { label: "Karbo", bar: "bg-yellow-400" },
-            { label: "Lemak", bar: "bg-red-400" },
-          ].map(({ label, bar }) => (
+            {
+              label: "Protein",
+              bar: "bg-blue-400",
+              value: data?.total_protein_g || 0,
+            },
+            {
+              label: "Karbo",
+              bar: "bg-yellow-400",
+              value: data?.total_carbs_g || 0,
+            },
+            {
+              label: "Lemak",
+              bar: "bg-red-400",
+              value: data?.total_fat_g || 0,
+            },
+          ].map(({ label, bar, value }) => (
             <div
               key={label}
               className="bg-gray-50 dark:bg-slate-800 rounded-xl p-2.5"
@@ -136,7 +174,7 @@ export default function MainPage() {
               <p className="text-[10px] text-gray-400 uppercase font-bold">
                 {label}
               </p>
-              <p className="font-bold text-base dark:text-white">0g</p>
+              <p className="font-bold text-base dark:text-white">{value}g</p>
 
               <div className="w-full bg-gray-200 h-1 rounded-full mt-1">
                 <div

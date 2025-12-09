@@ -14,8 +14,7 @@ export default function ProfilePage() {
 
   const mutateLogout = useLogout();
 
-  const { data } = useUser();
-  const user = data?.data.user;
+  const { data: user } = useUser();
 
   const handleOpenOnboarding = () => {
     router.push("/onboarding");
@@ -25,7 +24,7 @@ export default function ProfilePage() {
     mutateLogout.mutate();
   };
 
-  const fullName = data?.data?.user?.name || "";
+  const fullName = user?.name || "";
   const [firstname = "User", lastname = ""] = fullName.split(" ");
   // Avatar generator
   const avatarUrl = `https://avatar.iran.liara.run/username?username=${firstname}${

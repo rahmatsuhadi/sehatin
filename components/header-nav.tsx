@@ -19,12 +19,12 @@ export default function HeaderNav() {
   const { data, isLoading, isError } = useUser();
 
   useEffect(() => {
-    if ((!data?.data && isError && !isLoading) || !token) {
+    if ((!data && isError && !isLoading) || !token) {
       window.location.href = "/masuk";
     }
-  }, [data?.data.user, isLoading]);
+  }, [data, isLoading]);
 
-  const fullName = data?.data?.user?.name || "";
+  const fullName = data?.name || "";
   const [firstname = "User", lastname = ""] = fullName.split(" ");
   // Avatar generator
   const avatarUrl = `https://avatar.iran.liara.run/username?username=${firstname}${
