@@ -44,6 +44,8 @@ export function WeightForm({ onNewLog, isAlreadyLogged }: WeightFormProps) {
     },
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["weightHistory"] });
+
+      queryClient.invalidateQueries({ queryKey: ["weight-chart"] });
       customToast("Berat badan berhasil disimpan", "success");
       reset(); // Clear the form
     },

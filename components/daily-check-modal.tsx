@@ -1,76 +1,149 @@
 "use client";
 
+import { apiClient } from "@/lib/api-client";
+import { customToast } from "@/lib/custom-toast";
+import { Weight } from "@/lib/types";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
 
 interface Props {
   open: boolean;
   onClose: () => void;
-  onSave: (value: number) => void;
+  currentWeight: number;
 }
 
-export default function DailyCheckinModal({ open, onClose, onSave }: Props) {
-  // Jika modal tidak dibuka → tidak render
+interface MutationBody {
+  weight_kg: number;
+  log_date: string;
+}
+
+interface WeightFormInput {
+  weight_kg: number;
+}
+
+export default function DailyCheckinModal({
+  open,
+  onClose,
+  currentWeight,
+}: Props) {
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation<Weight, Error, MutationBody>({
+    mutationFn: async (newLog) => {
+      const response = await apiClient<{ data: Weight }>("/weights", {
+        method: "POST",
+        body: JSON.stringify(newLog),
+      });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["weightHistory"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      customToast("Berat badan berhasil disimpan", "success");
+      onClose();
+    },
+    onError: () => {
+      customToast("Gagal menyimpan data", "error");
+    },
+  });
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<WeightFormInput>({
+    defaultValues: { weight_kg: undefined },
+  });
+
+  useEffect(() => {
+    if (currentWeight) {
+      reset({
+        weight_kg: currentWeight,
+      });
+    }
+  }, [currentWeight, reset]);
+
+  // Form submit handler
+  const onSubmit: SubmitHandler<WeightFormInput> = (data) => {
+    const today = new Date().toISOString().split("T")[0];
+
+    const apiBody: MutationBody = {
+      weight_kg: Number(data.weight_kg),
+      log_date: today,
+    };
+
+    mutation.mutate(apiBody);
+  };
+
   if (!open) return null;
 
   return (
     <div
       className="
         fixed inset-0 bg-black/60 backdrop-blur-sm z-[65]
-        flex items-center justify-center p-4
-        pointer-events-none
-        animate-fadeIn
+        flex items-center justify-center p-4 animate-fadeIn
       "
     >
       <div
         className="
           bg-white dark:bg-darkCard rounded-[2rem] w-full max-w-xs p-6 shadow-2xl text-center 
-          pointer-events-auto animate-scaleIn
+          animate-scaleIn
         "
       >
-        {/* Avatar / Mascot */}
+        {/* Icon */}
         <div className="text-4xl mb-2 select-none">🥑</div>
 
-        {/* Title */}
-        <h3 className="font-bold text-lg mb-2 dark:text-white">
+        <h3 className="font-bold text-lg mb-1 dark:text-white">
           Check-In Harian 📅
         </h3>
 
-        {/* Subtitle */}
         <p className="text-xs text-gray-500 mb-4">
-          Sudah nimbang berat badan pagi ini?
+          Sudah cek berat badan hari ini?
         </p>
 
-        {/* Input */}
-        <input
-          type="number"
-          id="daily-weight"
-          placeholder="kg"
-          className="
-            w-full p-3 rounded-xl border text-center text-xl font-bold 
-            bg-gray-100 dark:bg-gray-800 dark:text-white outline-none
-          "
-        />
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
+          {/* Input */}
+          <input
+            id="daily-weight"
+            type="number"
+            {...register("weight_kg", {
+              required: "Berat wajib diisi",
+              min: { value: 1, message: "Berat minimal 1 kg" },
+              valueAsNumber: true,
+            })}
+            placeholder="Masukkan berat (kg)"
+            className={`w-full p-3 rounded-xl border text-center text-xl font-bold 
+              bg-gray-100 dark:bg-gray-800 dark:text-white outline-none 
+              ${errors.weight_kg ? "border-red-500" : "border-gray-200"}`}
+          />
 
-        {/* Save Button */}
-        <button
-          onClick={() => {
-            const value = Number(
-              (document.getElementById("daily-weight") as HTMLInputElement)
-                .value
-            );
-            if (!isNaN(value)) onSave(value);
-          }}
-          className="
-            w-full bg-secondary text-white font-bold py-3 rounded-xl mt-4
-            active:scale-95 transition
-          "
-        >
-          Update Data
-        </button>
+          {/* Error */}
+          {errors.weight_kg && (
+            <p className="text-red-500 text-xs -mt-2">
+              {errors.weight_kg.message}
+            </p>
+          )}
+
+          {/* Submit */}
+          <button
+            type="submit"
+            className="
+              w-full bg-secondary text-white font-bold py-3 rounded-xl 
+              active:scale-95 transition
+            "
+          >
+            Simpan
+          </button>
+        </form>
 
         {/* Skip */}
         <button
-          onClick={onClose}
+          onClick={() => {
+            reset();
+            onClose();
+          }}
           className="text-xs text-gray-400 mt-3 underline w-full"
         >
           Nanti Saja

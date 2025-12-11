@@ -16,6 +16,7 @@ export interface User {
   bmi: number;
   tdee_kcal: number;
   ideal_weight_kg: number;
+  target_weight_kg?: number;
   last_checkin_at: string;
   created_at: string;
   updated_at: string;
@@ -27,4 +28,19 @@ export interface Weight {
   weight_kg: number;
   bmi: number;
   created_at: string; // The date string from the API
+}
+
+export interface Meals {
+  label: string;
+  meal_type: number;
+  eaten_at: string;
+  total_calories_kcal: number;
+  items_count: number;
+
+  name_detected: string;
+  name_final: string;
+  calories_kcal: number;
+  protein_g: number;
+  carbs_g: number;
+  fat_g: number;
 }

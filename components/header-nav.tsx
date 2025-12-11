@@ -27,7 +27,7 @@ export default function HeaderNav() {
   const fullName = data?.name || "";
   const [firstname = "User", lastname = ""] = fullName.split(" ");
   // Avatar generator
-  const avatarUrl = `https://avatar.iran.liara.run/username?username=${firstname}${
+  const avatarUrl = `https://ui-avatars.com/api/?name=${firstname}${
     lastname ? "+" + lastname : ""
   }`;
 

@@ -10,7 +10,7 @@ export default function MainLayout({
 }) {
   return (
     <AuthGuard>
-      <div className="min-h-screen flex bg-background">
+      <div className="min-h-screen flex ">
         <div className="hidden lg:block">
           <ButtonNav />
         </div>

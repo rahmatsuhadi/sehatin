@@ -10,7 +10,6 @@ import { Loader2 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface DataModalProps {
-  onSave: (val: User) => void;
   onClose: () => void;
   open: boolean;
 }
