@@ -120,12 +120,12 @@ export default function ScanPage() {
       )}
 
       {/* Camera Fullscreen */}
-      {openCamera && (
+      {/* {openCamera && (
         <CameraScan
           onCapture={handleCapture}
           onClose={() => setOpenCamera(false)}
         />
-      )}
+      )} */}
     </div>
   );
 }

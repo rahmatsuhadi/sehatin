@@ -75,6 +75,7 @@ const CameraScan: React.FC<CameraScanProps> = ({ onCapture, onClose }) => {
 
   // ON MOUNT + facingMode berubah
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     startCamera();
     return () => stopCamera();
   }, [startCamera, stopCamera]);
