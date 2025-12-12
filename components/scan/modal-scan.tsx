@@ -116,7 +116,7 @@ export default function ModalScanContent({
 
       {isAnalisisOpen && sesssionId && (
         <ModalAnalisis
-          sesssionId={sesssionId}
+          sessionId={sesssionId}
           onClose={() => {
             onCloseModal();
           }}

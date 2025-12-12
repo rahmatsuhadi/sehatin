@@ -38,7 +38,8 @@ export default function DailyCheckinModal({
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["weightHistory"] });
+      queryClient.invalidateQueries({ queryKey: ["weight-history"] });
+      queryClient.invalidateQueries({ queryKey: ["weight-chart"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       customToast("Berat badan berhasil disimpan", "success");
       onClose();

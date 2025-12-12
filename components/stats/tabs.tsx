@@ -8,7 +8,7 @@ export default function TabsStatNutrition({
   setActiveTab,
 }: TabsStatNutritionProps) {
   return (
-    <div className="bg-gray-100 dark:bg-gray-700 p-1 rounded-xl flex gap-1">
+    <div className="bg-gray-100 dark:bg-gray-700 p-1 rounded-xl flex gap-1 mb-6">
       <button
         id="stat-tab-cal"
         onClick={() => setActiveTab("calorie")}

@@ -15,11 +15,10 @@ interface WeightFormInput {
 }
 
 interface WeightFormProps {
-  onNewLog: (data: WeightFormInput & { bmi: number }) => void;
   isAlreadyLogged?: boolean;
 }
 
-export function WeightForm({ onNewLog, isAlreadyLogged }: WeightFormProps) {
+export function WeightForm({ isAlreadyLogged }: WeightFormProps) {
   const queryClient = useQueryClient();
 
   const {
@@ -43,7 +42,7 @@ export function WeightForm({ onNewLog, isAlreadyLogged }: WeightFormProps) {
       return response.data;
     },
     onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["weightHistory"] });
+      queryClient.invalidateQueries({ queryKey: ["weight-history"] });
 
       queryClient.invalidateQueries({ queryKey: ["weight-chart"] });
       customToast("Berat badan berhasil disimpan", "success");

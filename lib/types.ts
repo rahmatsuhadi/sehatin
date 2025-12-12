@@ -27,12 +27,16 @@ export interface User {
 export interface Weight {
   weight_kg: number;
   bmi: number;
+  log_date: string;
   created_at: string; // The date string from the API
 }
 
+export type MealsType = "breakfast" | "lunch" | "dinner" | "snack";
+
 export interface Meals {
+  id: string;
   label: string;
-  meal_type: number;
+  meal_type: MealsType;
   eaten_at: string;
   total_calories_kcal: number;
   items_count: number;

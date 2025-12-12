@@ -426,7 +426,7 @@ export default function GenerateMenuModal({
 
       {isRecipeModalOpen && selectedRecipe && (
         <div className="fixed inset-0 z-[90] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-darkCard rounded-3xl w-full max-w-md p-6 shadow-2xl relative animate-bounce-in">
+          <div className="bg-white dark:bg-darkCard rounded-3xl w-full max-w-md p-6 shadow-2xl relative animate-bounce-in  max-h-[90vh] overflow-y-auto ">
             {/* Close Button */}
             <button
               onClick={() => setIsRecipeModalOpen(false)}
@@ -559,7 +559,14 @@ export default function GenerateMenuModal({
         <SaveMealModal
           isOpen={isSaveModalOpen}
           onClose={() => setIsSaveModalOpen(false)}
-          recipeId={recipeId as string}
+          recipeId={selectedRecipe.id}
+          onSuccess={() => {
+            localStorage.removeItem("last_recipe_request_id");
+            setRecipeId(null);
+            setSelectedRecipe(null);
+            setIsSaveModalOpen(false);
+            setIsModalOpen(false);
+          }}
           defaultLabel={selectedRecipe.title}
           servings={selectedRecipe.servings}
         />
