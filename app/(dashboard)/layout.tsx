@@ -18,7 +18,7 @@ export default function MainLayout({
         <div className="flex-1 lg:ml-56 ">
           <HeaderNav />
 
-          <main className="pt-20 px-5 max-w-xl mx-auto pb-28 lg:pb-10 mt-10">
+          <main className="py-5 md:pt-10  max-w-xl mx-auto  lg:pb-10 mt-10">
             {children}
           </main>
         </div>

@@ -115,27 +115,26 @@ export default function DailyCheckinModal({
               valueAsNumber: true,
             })}
             placeholder="Masukkan berat (kg)"
-            className={`w-full p-3 rounded-xl border text-center text-xl font-bold 
+            className={`w-full p-3 rounded-xl border text-center text-lg font-bold 
               bg-gray-100 dark:bg-gray-800 dark:text-white outline-none 
               ${errors.weight_kg ? "border-red-500" : "border-gray-200"}`}
           />
 
           {/* Error */}
           {errors.weight_kg && (
-            <p className="text-red-500 text-xs -mt-2">
-              {errors.weight_kg.message}
-            </p>
+            <p className="error-message">{errors.weight_kg.message}</p>
           )}
 
           {/* Submit */}
           <button
+            disabled={mutation.isPending}
             type="submit"
             className="
-              w-full bg-secondary text-white font-bold py-3 rounded-xl 
+              w-full bg-secondary text-white hover:cursor-pointer hover:bg-secondary/70 font-bold py-3 rounded-xl 
               active:scale-95 transition
             "
           >
-            Simpan
+            {mutation.isPending ? "Menyimpan" : "Simpan"}
           </button>
         </form>
 

@@ -49,9 +49,10 @@ export default function HeaderNav() {
   "
     >
       {/* Logo */}
-      <div className="flex items-center gap-2 lg:gap-3">
-        <div
-          className="
+      <Link href={"/"}>
+        <div className="flex items-center gap-2 lg:gap-3">
+          <div
+            className="
           w-8 h-8 
           md:w-9 md:h-9 
           lg:w-11 lg:h-11
@@ -59,20 +60,21 @@ export default function HeaderNav() {
           rounded-lg flex items-center justify-center 
           text-white 
         "
-        >
-          <Icon icon={faLeaf} className="text-sm md:text-base lg:text-lg" />
-        </div>
+          >
+            <Icon icon={faLeaf} className="text-sm md:text-base lg:text-lg" />
+          </div>
 
-        <h1
-          className="
+          <h1
+            className="
             font-bold tracking-tight 
             text-gray-800 dark:text-white 
             text-lg md:text-xl lg:text-2xl
           "
-        >
-          Sehatin
-        </h1>
-      </div>
+          >
+            Sehatin
+          </h1>
+        </div>
+      </Link>
 
       {/* Right side */}
       <div className="flex items-center gap-3 lg:gap-4">

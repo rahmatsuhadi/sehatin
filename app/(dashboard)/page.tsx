@@ -79,8 +79,15 @@ export default function MainPage() {
     this_month_logged_days: 0,
   };
 
+  const loggedDays = Math.min(
+    Math.max(streak?.this_week_logged_days ?? 0, 0),
+    7
+  );
+
+  const remainingDays = 7 - loggedDays;
+
   return (
-    <div className="page-section fade-in space-y-8 lg:space-y-10">
+    <div className="page-section fade-in space-y-8 lg:space-y-10 px-5 mt-3 pb-28">
       {/* Top Greeting */}
       <div className="flex justify-between items-start">
         <div>
@@ -106,20 +113,20 @@ export default function MainPage() {
 
           {/* WEEKLY DOTS */}
           <div className="flex gap-1">
-            {/* Bulatan ORANYE (hari yang sudah logged) */}
-            {[...Array(streak.this_week_logged_days)].map((_, i) => (
+            {/* Hari yang sudah tercatat */}
+            {Array.from({ length: loggedDays }).map((_, i) => (
               <div
                 key={`done-${i}`}
                 className="w-2 h-2 rounded-full bg-orange-400"
-              ></div>
+              />
             ))}
 
-            {/* Bulatan ABU2 (hari yang belum) */}
-            {[...Array(7 - streak.this_week_logged_days)].map((_, i) => (
+            {/* Hari yang belum */}
+            {Array.from({ length: remainingDays }).map((_, i) => (
               <div
                 key={`pending-${i}`}
                 className="w-2 h-2 rounded-full bg-gray-300 dark:bg-gray-700"
-              ></div>
+              />
             ))}
           </div>
         </div>
@@ -218,9 +225,13 @@ export default function MainPage() {
 
       {/* Meal Plan */}
       <div>
-        <GenerateMenuModal
-          maxCalories={today_summary?.calories_remaining || 0}
-        />
+        {today_summary?.calories_remaining == 0 ? (
+          <></>
+        ) : (
+          <GenerateMenuModal
+            maxCalories={today_summary?.calories_remaining || 0}
+          />
+        )}
       </div>
 
       {/* Scan CTA */}

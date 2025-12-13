@@ -5,7 +5,7 @@ import { useState } from "react";
 
 export default function OnboardingPage() {
   return (
-    <div className="min-h-screen  dark:bg-darkBg p-6 fade-in">
+    <div className="min-h-screen  dark:bg-darkBg p-6 fade-in px-5 mt-3 pb-28">
       <h1 className="text-3xl font-extrabold mb-3 text-gray-800 dark:text-white">
         Data Fisik Kamu
       </h1>

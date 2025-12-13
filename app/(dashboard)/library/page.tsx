@@ -115,9 +115,9 @@ export default function LibraryPage() {
   };
 
   return (
-    <div className="page-section fade-in pb-24">
+    <div className="page-section fade-in pb-24 px-5 mt-3 pb-28">
       {/* Header */}
-      <div className="sticky top-20 z-30  dark:bg-darkBg pb-4 pt-2 overflow-hidden">
+      <div className="top-20 z-30  dark:bg-darkBg pb-4 pt-2 overflow-hidden">
         <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">
           Pustaka Resep
         </h2>

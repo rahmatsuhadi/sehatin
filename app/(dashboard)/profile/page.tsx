@@ -32,7 +32,7 @@ export default function ProfilePage() {
   }`;
 
   return (
-    <div className="page-section fade-in pb-24">
+    <div className="page-section fade-in pb-24 px-5 mt-3">
       {/* Avatar + Name */}
       <div className="text-center mb-8 pt-6">
         <div className="w-28 h-28 mx-auto bg-gray-200 rounded-full p-1 border-4 border-white dark:border-gray-700 shadow-xl mb-3 overflow-hidden">

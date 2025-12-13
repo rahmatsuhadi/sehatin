@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
-    <title>Sehatin - Empathy-Driven Health</title>
+    <title>Sehatin - Digital Nutrition Platform</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -466,7 +466,7 @@
                 Menu Hari Ini
               </h3>
               <button
-                onclick="generateMealPlan()"
+                onclick="openRecipePrefs()"
                 class="text-primary text-xs font-bold uppercase tracking-wide bg-primary/10 px-3 py-1 rounded-full hover:bg-primary hover:text-white transition"
               >
                 <i class="fas fa-magic mr-1"></i> Buat Menu
@@ -764,8 +764,8 @@
             </div>
           </div>
           <div class="input-group">
-            <label class="text-xs font-bold text-gray-500">Usia</label
-            ><input type="number" id="input-age" class="text-center" />
+            <label class="text-xs font-bold text-gray-500">Tanggal Lahir</label
+            ><input type="date" id="input-dob" class="text-center" />
           </div>
           <div class="input-group">
             <label class="text-xs font-bold text-gray-500"
@@ -807,6 +807,62 @@
         </div>
       </div>
     </div>
+
+    <div
+      id="recipe-prefs-modal"
+      class="fixed inset-0 bg-black/80 z-[70] hidden flex items-center justify-center p-4 backdrop-blur-sm"
+    >
+      <div
+        class="bg-white dark:bg-darkCard rounded-[2rem] w-full max-w-sm overflow-hidden shadow-2xl animate-bounce-in relative"
+      >
+        <button
+          onclick="document.getElementById('recipe-prefs-modal').classList.add('hidden')"
+          class="absolute top-4 right-4 text-gray-400"
+        >
+          <i class="fas fa-times text-xl"></i>
+        </button>
+        <div class="p-6">
+          <h3 class="font-bold text-xl mb-1 dark:text-white">
+            Kustomisasi Menu
+          </h3>
+          <p class="text-xs text-gray-500 mb-6">
+            Bantu AI memilihkan resep yang cocok
+          </p>
+
+          <div class="space-y-4">
+            <div class="input-group">
+              <label class="text-xs font-bold text-gray-500 mb-1 block"
+                >Lagi pengen makan apa?</label
+              >
+              <select id="pref-mood">
+                <option value="rumahan">Masakan Rumahan</option>
+                <option value="barat">Western / Steak</option>
+                <option value="segar">Yang Segar-segar</option>
+                <option value="pedas">Pedas Nampol</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label class="text-xs font-bold text-gray-500 mb-1 block"
+                >Budget per porsi?</label
+              >
+              <select id="pref-budget">
+                <option value="hemat">Hemat (< 20rb)</option>
+                <option value="sedang">Sedang (20rb - 50rb)</option>
+                <option value="sultan">Sultan (> 50rb)</option>
+              </select>
+            </div>
+          </div>
+
+          <button
+            onclick="submitRecipePrefs()"
+            class="w-full bg-gradient-to-r from-secondary to-blue-600 text-white font-bold py-4 rounded-xl mt-6 shadow-lg btn-press"
+          >
+            <i class="fas fa-robot mr-2"></i> GENERATE MENU
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div
       id="daily-modal"
       class="fixed inset-0 bg-black/80 z-[65] hidden flex items-center justify-center p-4 backdrop-blur-sm"
@@ -860,9 +916,7 @@
               <i class="fas fa-times text-xl"></i>
             </button>
           </div>
-
           <div id="scan-items-container" class="space-y-4 mb-6"></div>
-
           <div
             class="bg-blue-50 dark:bg-slate-800 p-4 rounded-xl border border-blue-100 dark:border-slate-700 mb-4"
           >
@@ -873,7 +927,6 @@
               ><span id="scan-total-display">0 kkal</span>
             </div>
           </div>
-
           <button
             onclick="saveFood()"
             class="w-full bg-primary text-white font-bold py-4 rounded-xl shadow-lg btn-press"
@@ -896,14 +949,12 @@
           <div
             class="px-3 py-1 rounded bg-gray-100 dark:bg-gray-700 text-xs font-bold border border-gray-300"
           >
-            Grade: <span class="text-green-600">B+</span>
+            Grade: <span class="text-green-600">A-</span>
           </div>
         </div>
-
         <div class="mb-4 h-40 w-full relative">
           <canvas id="radarChart"></canvas>
         </div>
-
         <div class="mb-4">
           <p class="text-[10px] text-gray-500 uppercase font-bold mb-1">
             Nutri-Score
@@ -916,7 +967,6 @@
             <div class="ns-seg ns-e"></div>
           </div>
         </div>
-
         <div
           class="bg-blue-50 dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-blue-100 dark:border-slate-700 mb-4"
         >
@@ -944,7 +994,6 @@
             </div>
           </div>
         </div>
-
         <div
           id="advice-box"
           class="bg-gray-50 dark:bg-slate-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700 mb-4 text-left"
@@ -961,7 +1010,6 @@
             malam kita makan buah atau sayur tumis?
           </p>
         </div>
-
         <div class="border-t border-gray-100 dark:border-gray-700 pt-4 mb-4">
           <div class="flex justify-between text-sm mb-1">
             <span class="text-gray-500">Sisa Kalori Harian:</span
@@ -973,7 +1021,6 @@
             <div id="anl-bar" class="bg-primary h-full" style="width: 0%"></div>
           </div>
         </div>
-
         <button
           onclick="finishFlow()"
           class="w-full bg-primary text-white font-bold py-3 rounded-xl btn-press"
@@ -1176,9 +1223,17 @@
       function saveUserData() {
         const w = parseFloat(document.getElementById("input-weight").value);
         const h = parseFloat(document.getElementById("input-height").value);
-        const a = parseFloat(document.getElementById("input-age").value);
+        // REVISI 1: Hitung Umur dari Date of Birth
+        const dob = new Date(document.getElementById("input-dob").value);
+        if (isNaN(dob.getTime()))
+          return showToast("Isi tanggal lahir!", "error");
+
+        const diff_ms = Date.now() - dob.getTime();
+        const age_dt = new Date(diff_ms);
+        const a = Math.abs(age_dt.getUTCFullYear() - 1970);
+
         const goal = document.getElementById("input-goal").value;
-        if (!w || !h || !a || !selectedGender)
+        if (!w || !h || !selectedGender)
           return showToast("Lengkapi data!", "error");
 
         const bmi = (w / (h / 100) ** 2).toFixed(1);
@@ -1367,7 +1422,7 @@
         }
       }
 
-      // --- SCAN FLOW (Editable + Auto Total + Merged Result) ---
+      // --- SCAN FLOW ---
       function startScanFlow() {
         document.getElementById("camera-overlay").classList.remove("hidden");
       }
@@ -1394,7 +1449,6 @@
         let total = 0;
         appState.scanItems.forEach((i, index) => {
           total += i.cal;
-          // Updated HTML structure with inputs
           container.innerHTML += `
             <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm mb-3 flex justify-between items-center relative">
                 <div class="flex-1 mr-4">
@@ -1425,7 +1479,6 @@
       }
 
       function saveFood() {
-        // Read values from inputs before saving
         appState.scanItems.forEach((_, index) => {
           appState.scanItems[index].name = document.getElementById(
             `edit-name-${index}`
@@ -1434,14 +1487,12 @@
             document.getElementById(`edit-cal-${index}`).value
           );
         });
-
         document.getElementById("confirm-modal").classList.add("hidden");
         showMergedResult();
       }
 
       let radarChart;
       function showMergedResult() {
-        // Calc Totals based on possibly edited values
         let tot = { cal: 0, pro: 0, car: 0, fat: 0 };
         appState.scanItems.forEach((i) => {
           tot.cal += i.cal;
@@ -1450,17 +1501,13 @@
           tot.fat += i.fat;
         });
 
-        // Empathetic Logic Advice
         let advice = "Nutrisimu seimbang. Kerja bagus!";
         if (tot.fat > 20)
-          advice =
-            "Pilihan yang enak! Namun lemaknya agak tinggi. Coba seimbangkan dengan makan sayur rebus nanti malam ya.";
+          advice = "⚠️ Lemak cukup tinggi. Coba kurangi gorengan nanti malam.";
         else if (tot.car > 80)
-          advice =
-            "Energi yang besar! Karena karbohidratnya tinggi, yuk sempatkan jalan kaki sebentar agar tidak jadi lemak.";
+          advice = "⚠️ Karbohidrat tinggi. Imbangi dengan olahraga ringan.";
         else if (tot.pro < 10)
-          advice =
-            "Rasanya kurang lengkap tanpa protein. Nanti tambah telur atau tempe di cemilanmu ya!";
+          advice = "⚠️ Protein rendah. Tambahkan telur atau tempe.";
         document.getElementById("anl-advice").innerText = advice;
 
         const remaining =
@@ -1472,7 +1519,6 @@
             100
           ) + "%";
 
-        // Render Radar
         const ctxR = document.getElementById("radarChart").getContext("2d");
         if (radarChart) radarChart.destroy();
         radarChart = new Chart(ctxR, {
@@ -1482,7 +1528,7 @@
             datasets: [
               {
                 label: "Komposisi Makanan",
-                data: [tot.pro, tot.car, tot.fat, 5, 8], // Dummy fiber/vit
+                data: [tot.pro, tot.car, tot.fat, 5, 8],
                 backgroundColor: "rgba(88, 204, 2, 0.2)",
                 borderColor: "#58CC02",
                 pointBackgroundColor: "#58CC02",
@@ -1526,16 +1572,37 @@
       }
 
       // --- MENU & LIBRARY ---
-      function generateMealPlan() {
+      // REVISI 2: MODAL TRIGGER & LOGIC
+      function openRecipePrefs() {
+        document
+          .getElementById("recipe-prefs-modal")
+          .classList.remove("hidden");
+      }
+
+      function submitRecipePrefs() {
+        document.getElementById("recipe-prefs-modal").classList.add("hidden");
+        showToast("Menganalisis Preferensi...", "info");
+
+        setTimeout(() => {
+          const mood = document.getElementById("pref-mood").value;
+          const budget = document.getElementById("pref-budget").value;
+          generateMealPlan(mood, budget);
+        }, 1000);
+      }
+
+      function generateMealPlan(mood, budget) {
         const goal = appState.user.goal || "lose";
         const list = contentDB.recipes[goal] || [];
         const container = document.getElementById("meal-plan-container");
         container.innerHTML = "";
+
+        // Simulate AI filtering
         list.slice(0, 3).forEach((r) => {
           container.innerHTML += `<div class="bg-white dark:bg-darkCard p-3 rounded-2xl border border-gray-100 dark:border-gray-700 flex gap-3 items-center btn-press cursor-pointer" onclick="openDetail('${r.title}')"><img src="${r.img}" class="w-14 h-14 rounded-xl object-cover"><div class="flex-1"><h4 class="font-bold text-sm dark:text-white line-clamp-1">${r.title}</h4><p class="text-xs text-primary font-bold">${r.cal} kkal</p></div><i class="fas fa-chevron-right text-gray-300"></i></div>`;
         });
-        showToast("Menu berhasil dibuat!");
+        showToast("Menu disesuaikan!");
       }
+
       function renderLibrary(filter) {
         const container = document.getElementById("library-content");
         container.innerHTML = "";

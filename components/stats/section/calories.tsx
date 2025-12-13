@@ -10,6 +10,7 @@ import {
   faChevronRight,
   faCircle,
 } from "@fortawesome/free-solid-svg-icons";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface CaloriesSectionProps {
   user?: User;
@@ -56,7 +57,7 @@ export default function CaloriesSection({}: CaloriesSectionProps) {
   });
 
   // 🟢 QUERY HISTORY — pakai datefilter
-  const { data: mealsData = [] } = useQuery<Meals[]>({
+  const { data: mealsData = [], isLoading: loading } = useQuery<Meals[]>({
     queryKey: ["calorie-history", datefilter, type],
     queryFn: async () => {
       const api = await apiClient<{
@@ -132,8 +133,8 @@ export default function CaloriesSection({}: CaloriesSectionProps) {
 
       {/* calories */}
       <div className="bg-white dark:bg-darkCard p-4 rounded-4xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6 mt-5">
-        <div style={{ position: "relative", width: "100%", height: "250px" }}>
-          <canvas id="mainChart"></canvas>
+        <div className="relative w-full h-[250px]">
+          <canvas id="mainChart" style={{ width: "80%" }}></canvas>
         </div>
       </div>
 
@@ -141,123 +142,180 @@ export default function CaloriesSection({}: CaloriesSectionProps) {
         Riwayat Makanan
       </h3>
 
-      <div className="flex items-center gap-3 mb-4 justify-between">
-        <select
-          value={type}
-          onChange={(e) => setType(e.target.value as MealsType)}
+      <div className="flex items-center justify-between mb-4 gap-2">
+        {/* Prev Day */}
+        <button
+          onClick={() => {
+            const d = new Date(datefilter);
+            d.setDate(d.getDate() - 1);
+            setDateFilter(d.toISOString().split("T")[0]);
+          }}
           className="
-      px-3 py-2 rounded-xl border text-sm 
-      dark:border-gray-700 dark:bg-slate-800 dark:text-white
+      w-9 h-9 flex items-center justify-center
+      rounded-xl bg-gray-100 hover:bg-gray-200
+      dark:bg-slate-700 dark:hover:bg-slate-600
+      transition
     "
         >
-          <option value="">Semua</option>
-          <option value="breakfast">Breakfast</option>
-          <option value="lunch">Lunch</option>
-          <option value="dinner">Dinner</option>
-          <option value="snack">Snack</option>
-        </select>
+          <Icon icon={faChevronLeft} className="text-sm dark:text-white" />
+        </button>
 
-        <input
-          type="date"
-          value={datefilter}
-          onChange={(e) => setDateFilter(e.target.value)}
+        {/* Filter Group */}
+        <div
           className="
-      px-3 py-2 rounded-xl border text-sm 
-      dark:border-gray-700 dark:bg-slate-800 dark:text-white
+       flex items-center gap-2
+      bg-white dark:bg-slate-800
+      px-2 py-1 rounded-2xl
+      border border-gray-200 dark:border-gray-700
     "
-        />
-
-        <div className="flex items-center gap-1">
-          <button
-            onClick={() => {
-              const d = new Date(datefilter);
-              d.setDate(d.getDate() - 1);
-              setDateFilter(d.toISOString().split("T")[0]);
-            }}
+        >
+          {/* Meal Type */}
+          <select
+            value={type}
+            onChange={(e) => setType(e.target.value as MealsType)}
             className="
-      px-2 py-2 rounded-xl text-xs font-bold bg-gray-200 
-      dark:bg-slate-700 dark:text-white
-    "
+        bg-transparent text-sm font-medium hidden md:block
+        focus:outline-none
+        dark:text-white
+      "
           >
-            <Icon icon={faChevronLeft} className="text-sm" />
-          </button>
+            <option value="">Semua</option>
+            <option value="breakfast">Breakfast</option>
+            <option value="lunch">Lunch</option>
+            <option value="dinner">Dinner</option>
+            <option value="snack">Snack</option>
+          </select>
 
-          <button
-            onClick={() =>
-              setDateFilter(new Date().toISOString().split("T")[0])
-            }
-            className="
-      px-2 py-2 rounded-xl text-xs font-bold bg-secondary text-white
-    "
-          >
-            <Icon icon={faCircle} className="text-[10px]" />
-          </button>
+          <span className="h-4 w-px bg-gray-300 dark:bg-gray-600  hidden md:block" />
 
-          <button
-            onClick={() => {
-              const d = new Date(datefilter);
-              d.setDate(d.getDate() + 1);
-              setDateFilter(d.toISOString().split("T")[0]);
-            }}
+          {/* Date */}
+          <input
+            type="date"
+            value={datefilter}
+            onChange={(e) => setDateFilter(e.target.value)}
             className="
-      px-2 py-2 rounded-xl text-xs font-bold bg-gray-200 
-      dark:bg-slate-700 dark:text-white
-    "
-          >
-            <Icon icon={faChevronRight} className="text-sm" />
-          </button>
+        bg-transparent text-sm
+        focus:outline-none
+        dark:text-white
+      "
+          />
         </div>
+
+        {/* Next Day */}
+        <button
+          onClick={() => {
+            const d = new Date(datefilter);
+            d.setDate(d.getDate() + 1);
+            setDateFilter(d.toISOString().split("T")[0]);
+          }}
+          className="
+      w-9 h-9 flex items-center justify-center
+      rounded-xl bg-gray-100 hover:bg-gray-200
+      dark:bg-slate-700 dark:hover:bg-slate-600
+      transition
+    "
+        >
+          <Icon icon={faChevronRight} className="text-sm dark:text-white" />
+        </button>
       </div>
+
+      <select
+        value={type}
+        onChange={(e) => setType(e.target.value as MealsType)}
+        className="
+        bg-white md:hidden dark:bg-darkCard border mb-4 border-gray-200 dark:border-gray-600 rounded-lg px-3 py-1 text-sm font-bold
+      "
+      >
+        <option value="">Semua</option>
+        <option value="breakfast">Breakfast</option>
+        <option value="lunch">Lunch</option>
+        <option value="dinner">Dinner</option>
+        <option value="snack">Snack</option>
+      </select>
 
       {/* LIST */}
       <div id="history-list" className="space-y-2">
-        {mealsData?.map((item, idx) => {
-          const isToday =
-            new Date(item.eaten_at).toDateString() ===
-            new Date(datefilter).toDateString();
-
-          const timeLabel = isToday
-            ? "Hari Ini"
-            : new Date(item.eaten_at).toLocaleDateString("id-ID");
-
-          return (
-            <div
-              key={idx}
-              className="
+        {loading ? (
+          Array(1)
+            .fill(null)
+            .map((item, key) => (
+              <div
+                key={key}
+                className="
           p-4 rounded-2xl bg-white bg-gray-50
           dark:bg-slate-800 border border-gray-100
           dark:border-gray-700 shadow-sm
           flex justify-between items-center
         "
-            >
-              {/* LEFT */}
-              <div className="space-y-1">
-                {/* Tanggal */}
-                <p className="font-bold text-sm dark:text-white">{timeLabel}</p>
+              >
+                {/* LEFT */}
+                <div className="space-y-1 w-full">
+                  {/* Tanggal */}
+                  <Skeleton className="h-5 w-[20%]" />
 
-                {/* Meal Type */}
-                <p className="text-xs font-medium text-primary capitalize">
-                  {item.meal_type}
-                </p>
+                  {/* Meal Type */}
+                  <Skeleton className=" h-3 w-[8%]" />
 
-                {/* Label makanan */}
-                <p className="text-xs text-gray-600 dark:text-gray-300">
-                  {item.label}
-                </p>
+                  {/* Label makanan */}
+                  <Skeleton className="h-3 w-[40%]" />
+                </div>
+
+                {/* RIGHT – Kalori */}
+                <div className="text-right">
+                  <Skeleton className="h-4 w-10 mb-2" />
+                  <Skeleton className="h-3 w-[80px]" />
+                </div>
               </div>
+            ))
+        ) : mealsData.length > 0 ? (
+          mealsData?.map((item, idx) => {
+            const isToday =
+              new Date(item.eaten_at).toDateString() ===
+              new Date(datefilter).toDateString();
 
-              {/* RIGHT – Kalori */}
-              <div className="text-right">
-                <p className="text-sm font-bold text-green-600">
-                  {item.total_calories_kcal} kkal
-                </p>
-                <p className="text-[10px] text-gray-400">Total Kalori</p>
+            const timeLabel = isToday
+              ? "Hari Ini"
+              : new Date(item.eaten_at).toLocaleDateString("id-ID");
+
+            return (
+              <div
+                key={idx}
+                className="
+          p-4 rounded-2xl bg-white bg-gray-50
+          dark:bg-slate-800 border border-gray-100
+          dark:border-gray-700 shadow-sm
+          flex justify-between items-center
+        "
+              >
+                {/* LEFT */}
+                <div className="space-y-1">
+                  {/* Tanggal */}
+                  <p className="font-bold text-sm dark:text-white">
+                    {timeLabel}
+                  </p>
+
+                  {/* Meal Type */}
+                  <p className="text-xs font-medium text-primary capitalize">
+                    {item.meal_type}
+                  </p>
+
+                  {/* Label makanan */}
+                  <p className="text-xs text-gray-600 dark:text-gray-300">
+                    {item.label}
+                  </p>
+                </div>
+
+                {/* RIGHT – Kalori */}
+                <div className="text-right">
+                  <p className="text-sm font-bold text-green-600">
+                    {item.total_calories_kcal} kkal
+                  </p>
+                  <p className="text-[10px] text-gray-400">Total Kalori</p>
+                </div>
               </div>
-            </div>
-          );
-        })}
-
-        {mealsData?.length === 0 && (
+            );
+          })
+        ) : (
           <p className="text-gray-500 text-sm text-center py-4">
             Belum ada riwayat.
           </p>

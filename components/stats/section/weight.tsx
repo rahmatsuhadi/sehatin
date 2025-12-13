@@ -6,6 +6,7 @@ import { apiClient } from "@/lib/api-client";
 import Chart, { ChartOptions } from "chart.js/auto";
 import { WeightForm } from "../weight-form";
 import { Weight } from "@/lib/types";
+import { useUser } from "@/service/auth";
 
 interface WeightChart {
   weight: number;
@@ -16,6 +17,9 @@ interface WeightChart {
 export default function WeightSection() {
   const [period, setPeriod] = useState<"week" | "month" | "3months">("week");
   const { dateFrom, dateTo } = periodGetter(period);
+
+  const { data: user } = useUser();
+  const currentHeight = user?.height_cm || 0;
 
   const { data: weightCahrt = [] } = useQuery<WeightChart[]>({
     queryKey: ["weight-chart", period, dateFrom, dateTo],
@@ -135,8 +139,8 @@ export default function WeightSection() {
       <DropdownPeriod onChange={(val) => setPeriod(val)} />
       {/* calories */}
       <div className="bg-white dark:bg-darkCard p-4 rounded-4xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6 mt-5">
-        <div style={{ position: "relative", width: "100%", height: "250px" }}>
-          <canvas id="mainChart"></canvas>
+        <div className="relative w-full h-[250px]">
+          <canvas id="mainChart" style={{ width: "80%" }}></canvas>
         </div>
       </div>
 
@@ -169,7 +173,7 @@ export default function WeightSection() {
                     : new Date(item.log_date).toLocaleDateString("id-ID")}
                 </p>
                 <p className="text-xs text-gray-500">
-                  {/* Tinggi: {user?.height_cm || 0} cm */}
+                  Tinggi: {currentHeight || 0} cm
                 </p>
               </div>
               <div className="text-right">

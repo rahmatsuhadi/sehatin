@@ -46,7 +46,7 @@ export default function StatsPage() {
   const { data: user } = useUser();
 
   return (
-    <div className=" fade-in pb-20">
+    <div className=" fade-in pb-20 px-5 mt-3 pb-28">
       <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">
         Analisis Data
       </h2>
@@ -60,7 +60,9 @@ export default function StatsPage() {
 
       {/* ============= CHART CONTAINER ============= */}
 
-      {activeTab == "calorie" ? <CaloriesSection /> : <WeightSection />}
+      <div className="w-full">
+        {activeTab == "calorie" ? <CaloriesSection /> : <WeightSection />}
+      </div>
     </div>
   );
 }
