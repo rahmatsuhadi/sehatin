@@ -95,7 +95,7 @@ export default function MainPage() {
             Hai,
             <span className="text-gray-900 dark:text-white font-bold">
               {" "}
-              {data?.user.name}!
+              {data?.user?.name || "John"}!
             </span>
           </p>
           <h2 className="text-2xl lg:text-3xl font-extrabold text-gray-800 dark:text-white">
