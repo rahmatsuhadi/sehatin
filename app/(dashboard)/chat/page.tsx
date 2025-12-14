@@ -215,7 +215,7 @@ export default function ChatPage() {
         {/* Header */}
         <div className="sticky top-0 z-20 bg-gradient-to-r from-secondary to-blue-600 p-5 rounded-b-[2rem] shadow-lg text-white">
           <h3 className="font-bold text-base">Alvi Assistant</h3>
-          <p className="text-xs opacity-90">Konsultan Diet Pribadi</p>
+          <p className="text-xs opacity-90">Konsultan Pribadi</p>
         </div>
 
         {/* Chat Area */}

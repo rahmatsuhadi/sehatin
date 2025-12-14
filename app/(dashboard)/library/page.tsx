@@ -9,6 +9,8 @@ import {
   faBookmark,
   faBreadSlice,
   faCheese,
+  faChevronLeft,
+  faChevronRight,
   faDrumstickBite,
   faFire,
   faLeaf,
@@ -53,10 +55,70 @@ interface RecipeItem {
   }[];
 }
 
+const dummyArticles: ArticleItem[] = [
+  {
+    id: "sport-1",
+    title: "Latihan Kardio 20 Menit",
+    description:
+      "Latihan ringan untuk membakar lemak dan meningkatkan stamina.",
+    category: "olahraga",
+    image:
+      "https://d1vbn70lmn1nqe.cloudfront.net/prod/wp-content/uploads/2021/06/15012412/kesehatan-olahraga.jpg.webp",
+  },
+  {
+    id: "sport-2",
+    title: "Stretching Pagi Hari",
+    description: "Membantu tubuh lebih fleksibel dan mengurangi cedera.",
+    category: "olahraga",
+    image:
+      "https://www.neorheumacyl.com/public/files/Yuk-Praktikkan-10-Menit-Gerakan-Stretching-Di-Pagi-Hari.jpg",
+  },
+  {
+    id: "health-1",
+    title: "Manfaat Tidur Cukup",
+    description: "Tidur berkualitas membantu metabolisme dan fokus.",
+    category: "kesehatan",
+    image:
+      "https://d1vbn70lmn1nqe.cloudfront.net/prod/wp-content/uploads/2021/10/25025409/manfaat-istirahat-yang-cukup-dan-cara-memperolehnya-halodoc.jpg",
+  },
+  {
+    id: "health-2",
+    title: "Minum Air yang Cukup",
+    description: "Menjaga hidrasi penting untuk fungsi organ tubuh.",
+    category: "kesehatan",
+    image:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTs9Ii6ieinLXJDEtOfLXhiBYkFoViS337l3g&s",
+  },
+  {
+    id: "food-1",
+    title: "Salad Sayur Rendah Kalori",
+    description: "Pilihan makanan sehat untuk diet dan pencernaan.",
+    category: "makanan_sehat",
+    image:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRvq8gI9i1hz6NXP70ZW3jzIYWCyXOo3Agt7Q&s",
+  },
+  {
+    id: "food-2",
+    title: "Menu Sarapan Tinggi Protein",
+    description: "Membantu kenyang lebih lama dan menjaga energi.",
+    category: "makanan_sehat",
+    image:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5e2pqwjakw5IvjYLc39tmYxZXIoc1f3OfGw&s",
+  },
+];
+
 interface Pagination {
   current_page: number;
   total_pages: number;
   total_items: number;
+}
+
+interface ArticleItem {
+  id: string;
+  title: string;
+  description: string;
+  category: "olahraga" | "kesehatan" | "makanan_sehat";
+  image: string;
 }
 
 interface RecipeResponse {
@@ -68,20 +130,23 @@ interface RecipeResponse {
 // TABS
 // =======================================================
 interface Tab {
-  key: "all" | "saved";
+  key: string;
   label: string;
   icon?: IconDefinition;
 }
 
 const tabs: Tab[] = [
   { key: "all", label: "Resep" },
-  { key: "saved", label: "Disimpan", icon: faBookmark },
+  // { key: "saved", label: "Disimpan", icon: faBookmark },
+  { key: "olahraga", label: "Olahraga" },
+  { key: "kesehatan", label: "Kesehatan" },
+  { key: "makanan_sehat", label: "Makanan Sehat" },
 ];
 
 export default function LibraryPage() {
   const [active, setActive] = useState<Tab["key"]>("all");
   const [page, setPage] = useState(1);
-  const limit = 12;
+  const limit = 6;
   const [selectedRecipe, setSelectedRecipe] = useState<RecipeItem | null>(null);
   const [isDetailModal, setIsDetailModal] = useState<boolean>(false);
   const [isSaveModalOpen, setIsSaveModalOpen] = useState<boolean>(false);
@@ -89,6 +154,7 @@ export default function LibraryPage() {
   // Fetch recipes dari API
   const { data, isLoading, refetch } = useQuery<RecipeResponse>({
     queryKey: ["recipes", page, limit],
+    enabled: active == "active",
     queryFn: async () => {
       const res = await apiClient<{ data: RecipeResponse }>(
         `/recipes?limit=${limit}&page=${page}`
@@ -115,140 +181,237 @@ export default function LibraryPage() {
     // Bisa redirect ke halaman detail recipe
   };
 
+  const filteredArticles =
+    active === "olahraga"
+      ? dummyArticles.filter((a) => a.category === "olahraga")
+      : active === "kesehatan"
+      ? dummyArticles.filter((a) => a.category === "kesehatan")
+      : active === "makanan_sehat"
+      ? dummyArticles.filter((a) => a.category === "makanan_sehat")
+      : [];
+
   return (
     <div className="page-section fade-in pb-24 px-5 mt-3 pb-28">
       {/* Header */}
-      <div className="top-20 z-30  dark:bg-darkBg pb-4 pt-2 overflow-hidden">
+      <div className=" dark:bg-darkBg pb-4 pt-2 w-full">
         <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">
-          Pustaka Resep
+          Pustaka
         </h2>
 
         {/* Tabs */}
-        <div className="flex gap-2 overflow-x-auto flex-nowrap hide-scroll w-full max-w-full whitespace-nowrap scroll-smooth">
-          {tabs.map((t) => {
-            const selected = active === t.key;
-            return (
-              <button
-                key={t.key}
-                onClick={() => setActive(t.key)}
-                className={`px-5 py-2 rounded-full font-semibold text-sm whitespace-nowrap transition
-                  ${
-                    selected
-                      ? "bg-primary text-white shadow-lg shadow-green-500/30"
-                      : "bg-white dark:bg-darkCard border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300"
-                  }`}
-              >
-                {t.icon && (
-                  <Icon
-                    icon={t.icon}
-                    className={`mr-1 ${
-                      selected ? "text-white" : "text-secondary"
-                    }`}
-                  />
-                )}
-                {t.label}
-              </button>
-            );
-          })}
+        <div className="relative -mx-5 w-[400px] md:w-[500px]">
+          <div
+            className="
+      flex gap-2
+      overflow-x-auto
+      overflow-y-hidden
+      flex-nowrap
+      px-5
+      hide-scroll
+      scroll-smooth
+      touch-pan-x
+    "
+          >
+            {tabs.map((t) => {
+              const selected = active === t.key;
+              return (
+                <button
+                  key={t.key}
+                  onClick={() => setActive(t.key)}
+                  className={`
+            px-5 py-2 rounded-full font-semibold text-sm
+            whitespace-nowrap shrink-0
+            transition
+            ${
+              selected
+                ? "bg-primary text-white shadow-lg shadow-green-500/30"
+                : "bg-white dark:bg-darkCard border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300"
+            }
+          `}
+                >
+                  {t.icon && (
+                    <Icon
+                      icon={t.icon}
+                      className={`mr-1 ${
+                        selected ? "text-white" : "text-secondary"
+                      }`}
+                    />
+                  )}
+                  {t.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
       {/* Content */}
-      <div className="grid grid-cols-2 md:grid-cols-3  gap-4 pt-2">
-        {isLoading &&
-          Array(4)
-            .fill(null)
-            .map((ite, i) => (
-              <div
-                key={i}
-                className="bg-white dark:bg-darkCard rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700 cursor-pointer active:scale-[0.97] transition"
-              >
-                <div className="h-32 bg-gray-200 relative">
-                  <Skeleton className="w-full h-full" />
-                  <Skeleton className="absolute h-3 w-10 bg-gray-200 top-2 right-2 px-2 py-1 rounded-lg backdrop-blur" />
-                </div>
-                <div className="p-3">
-                  {/* <h4 className="font-bold text-xs dark:text-white line-clamp-2"> */}
-                  {/* {item.title} */}
-                  <Skeleton className="w-[60%] h-3 mb-2" />
-                  {/* </h4> */}
-                  {/* <p className="text-[10px] text-gray-500 mt-1 line-clamp-2"> */}
-                  <Skeleton className="w-[100%] h-2" />
-                  <Skeleton className="w-[100%] h-2 mt-1" />
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 pt-2">
+        {/* TAB RESEP */}
+        {active === "all" && (
+          <>
+            {isLoading &&
+              Array(4)
+                .fill(null)
+                .map((_, i) => (
+                  <div
+                    key={i}
+                    className="bg-white dark:bg-darkCard rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700"
+                  >
+                    <div className="h-32 bg-gray-200 relative">
+                      <Skeleton className="w-full h-full" />
+                    </div>
+                    <div className="p-3">
+                      <Skeleton className="w-[60%] h-3 mb-2" />
+                      <Skeleton className="w-full h-2" />
+                      <Skeleton className="w-[40%] h-2 mt-1" />
+                    </div>
+                  </div>
+                ))}
 
-                  {/* </p> */}
-                  {/* <p className="text-[10px] text-gray-500 mt-1"> */}
-                  {/* Kalori: {item.calories_per_serving_kcal} kcal */}
-                  <Skeleton className="mt-1 h-2 w-[30%]" />
-                  {/* </p> */}
-                </div>
+            {!isLoading && items.length === 0 && (
+              <div className="col-span-full text-center text-gray-400 py-10">
+                Tidak ada resep tersedia.
               </div>
-            ))}
+            )}
 
-        {!isLoading && items.length === 0 && (
-          <div className="col-span-full text-gray-400 dark:text-gray-500 text-center py-10">
-            Tidak ada resep tersedia.
-          </div>
+            {!isLoading &&
+              items.map((item) => {
+                const [first, last] = item.title.split(" ");
+                return (
+                  <div
+                    key={item.id}
+                    onClick={() => handleItemClick(item)}
+                    className="bg-white dark:bg-darkCard rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700 cursor-pointer"
+                  >
+                    <div className="h-32 relative">
+                      <img
+                        src={
+                          item.title == "Ayam Bakar Madu"
+                            ? "https://buckets.sasa.co.id/v1/AUTH_Assets/Assets/p/website/medias/page_medias/Screen_Shot_2023-01-09_at_17_40_36_(1)_(1)_(1)_(1)_(1)_(1)_(1)_(1).png"
+                            : `https://placehold.co/600x400?text=${first}+${last}`
+                        }
+                        className="w-full h-full object-cover"
+                      />
+                      <span className="absolute top-2 right-2 bg-black/50 text-white text-[10px] px-2 py-1 rounded-lg">
+                        Resep
+                      </span>
+                    </div>
+                    <div className="p-3">
+                      <h4 className="font-bold text-xs line-clamp-2 dark:text-white">
+                        {item.title}
+                      </h4>
+                      <p className="text-[10px] text-gray-500 mt-1 line-clamp-2">
+                        {item.description}
+                      </p>
+                      <p className="text-[10px] text-gray-500 mt-1">
+                        Kalori: {item.calories_per_serving_kcal} kcal
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+          </>
         )}
 
-        {!isLoading &&
-          items.map((item) => {
-            const [first, last] = item.title.split(" ");
-            return (
-              <div
-                key={item.id}
-                onClick={() => handleItemClick(item)}
-                className="bg-white dark:bg-darkCard rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700 cursor-pointer active:scale-[0.97] transition"
-              >
-                <div className="h-32 bg-gray-200 relative">
-                  <img
-                    src={`https://placehold.co/600x400?text=${first}+${last}`}
-                    className="w-full h-full rounded-xl object-cover"
-                  />
-                  <span className="absolute top-2 right-2 bg-black/50 text-white text-[10px] px-2 py-1 rounded-lg backdrop-blur">
-                    Resep
-                  </span>
-                </div>
-                <div className="p-3">
-                  <h4 className="font-bold text-xs dark:text-white line-clamp-2">
-                    {item.title}
-                  </h4>
-                  <p className="text-[10px] text-gray-500 mt-1 line-clamp-2">
-                    {item.description}
-                  </p>
-                  <p className="text-[10px] text-gray-500 mt-1">
-                    Kalori: {item.calories_per_serving_kcal} kcal
-                  </p>
-                </div>
+        {/* TAB ARTIKEL */}
+        {(active === "olahraga" || active === "kesehatan" || "makanan_sehat") &&
+          filteredArticles.map((article) => (
+            <div
+              key={article.id}
+              className="bg-white dark:bg-darkCard rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700"
+            >
+              <div className="h-32 relative">
+                <img
+                  src={article.image}
+                  className="w-full h-full object-cover"
+                />
+                <span className="absolute top-2 right-2 bg-black/50 text-white text-[10px] px-2 py-1 rounded-lg">
+                  {article.category === "olahraga"
+                    ? "Olahraga"
+                    : article.category === "kesehatan"
+                    ? "Kesehatan"
+                    : "Makanan Sehat"}
+                </span>
               </div>
-            );
-          })}
+              <div className="p-3">
+                <h4 className="font-bold text-xs line-clamp-2 dark:text-white">
+                  {article.title}
+                </h4>
+                <p className="text-[10px] text-gray-500 mt-1 line-clamp-2">
+                  {article.description}
+                </p>
+              </div>
+            </div>
+          ))}
       </div>
 
       {/* Pagination */}
-      {pagination.total_pages > 1 && (
-        <div className="flex justify-center gap-2 mt-6">
+      {active == "all" && pagination.total_pages > 1 && (
+        <div className="flex items-center justify-center gap-3 mt-6">
+          {/* Prev */}
           <button
             onClick={() => setPage((p) => Math.max(p - 1, 1))}
             disabled={page === 1}
-            className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+            className="
+      w-10 h-10 flex items-center justify-center
+      rounded-xl border
+      bg-white dark:bg-darkCard
+      border-gray-200 dark:border-gray-700
+      text-gray-600 dark:text-gray-300
+      disabled:opacity-40 disabled:cursor-not-allowed
+      hover:bg-gray-100 dark:hover:bg-slate-700
+      transition
+    "
+            aria-label="Previous page"
           >
-            <Icon icon={faRightLeft} />
+            <Icon icon={faChevronLeft} />
           </button>
-          <span className="px-4 py-2 bg-gray-100 rounded dark:bg-slate-700">
+
+          {/* Page Info */}
+          <div
+            className="
+      px-4 py-2 rounded-xl
+      bg-gray-100 dark:bg-slate-700
+      text-sm font-semibold
+      text-gray-700 dark:text-gray-200
+      min-w-[90px] text-center
+    "
+          >
             {page} / {pagination.total_pages}
-          </span>
+          </div>
+
+          {/* Next */}
           <button
             onClick={() =>
               setPage((p) => Math.min(p + 1, pagination.total_pages))
             }
             disabled={page === pagination.total_pages}
-            className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+            className="
+      w-10 h-10 flex items-center justify-center
+      rounded-xl border
+      bg-white dark:bg-darkCard
+      border-gray-200 dark:border-gray-700
+      text-gray-600 dark:text-gray-300
+      disabled:opacity-40 disabled:cursor-not-allowed
+      hover:bg-gray-100 dark:hover:bg-slate-700
+      transition
+    "
+            aria-label="Next page"
           >
-            <Icon icon={faArrowRight} />
+            <Icon icon={faChevronRight} />
           </button>
         </div>
       )}
+
+      {(active === "olahraga" ||
+        active === "kesehatan" ||
+        active === "makanan_sehat") &&
+        filteredArticles.length === 0 && (
+          <div className="col-span-full text-center text-gray-400 py-10">
+            Belum ada artikel tersedia.
+          </div>
+        )}
       {selectedRecipe && isDetailModal && (
         <ModalDetailMenu
           onSave={() => {

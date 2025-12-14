@@ -125,7 +125,7 @@ export default function GenerateMenuModal({
   const [cookingMethod, setCookingMethod] = useState("steamed");
   const [foodType, setFoodType] = useState("chicken");
   const [cuisine, setCuisine] = useState("indonesian");
-  const [servings, setServings] = useState(1);
+  const [servings, setServings] = useState("1");
 
   // Budget levels
   const [budgetLevel, setBudgetLevel] = useState<BudgetLevel>("sedang");
@@ -157,7 +157,6 @@ export default function GenerateMenuModal({
   }, [isModalOpen, isRecipeModalOpen, isSaveModalOpen]);
 
   const handleSubmit = () => {
-    setIsModalOpen(false);
     const selectedBudget = budgetMap[budgetLevel];
     customToast("Menganalisis...", "loading", "generate-menu");
 
@@ -168,7 +167,7 @@ export default function GenerateMenuModal({
       budget_min: selectedBudget.min,
       budget_max: selectedBudget.max,
       max_calories_kcal: maxCalories,
-      servings: servings, // fixed 1 porsi
+      servings: Number(servings), // fixed 1 porsi
       diet_restrictions: dietRestrictions,
     };
 
@@ -177,7 +176,6 @@ export default function GenerateMenuModal({
       {
         onSuccess(res) {
           customToast("Resep berhasil dibuat!", "success", "generate-menu");
-          setIsModalOpen(false);
           setRecipeId(res.data.recipe_request.id);
           localStorage.setItem(
             "last_recipe_request_id",
@@ -239,6 +237,7 @@ export default function GenerateMenuModal({
                   <select
                     className="w-full mt-1 p-2 rounded-lg border"
                     value={cookingMethod}
+                    disabled={mutation.isPending}
                     onChange={(e) => setCookingMethod(e.target.value)}
                   >
                     <option value="steamed">Di Kukus</option>
@@ -255,6 +254,7 @@ export default function GenerateMenuModal({
                   <select
                     className="w-full mt-1 p-2 rounded-lg border"
                     value={foodType}
+                    disabled={mutation.isPending}
                     onChange={(e) => setFoodType(e.target.value)}
                   >
                     <option value="chicken">Ayam</option>
@@ -272,6 +272,7 @@ export default function GenerateMenuModal({
                   <select
                     className="w-full mt-1 p-2 rounded-lg border"
                     value={cuisine}
+                    disabled={mutation.isPending}
                     onChange={(e) => setCuisine(e.target.value)}
                   >
                     <option value="indonesian">Indonesian</option>
@@ -297,6 +298,7 @@ export default function GenerateMenuModal({
                         <button
                           key={b.key}
                           type="button"
+                          disabled={mutation.isPending}
                           onClick={() => setBudgetLevel(b.key as BudgetLevel)}
                           className={`px-3 py-1 rounded-md  border transition ${
                             active
@@ -319,16 +321,14 @@ export default function GenerateMenuModal({
                     type="number"
                     className="w-full mt-1 p-2 border rounded-lg"
                     value={servings}
+                    disabled={mutation.isPending}
                     onChange={(e) => {
-                      const val = parseInt(e.target.value);
-                      if (isNaN(val)) return;
-                      setServings(val);
+                      const val = e.target.value;
+                      setServings(String(val));
                     }}
                   />
-                  {servings < 1 && (
-                    <p className="text-xs text-red-500 mt-1">
-                      Jumlah porsi minimal 1
-                    </p>
+                  {Number(servings || "") < 1 && (
+                    <p className="error-message mt-1">Jumlah porsi minimal 1</p>
                   )}
                 </div>
 
