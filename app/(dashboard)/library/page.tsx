@@ -59,51 +59,111 @@ const dummyArticles: ArticleItem[] = [
   {
     id: "sport-1",
     title: "Latihan Kardio 20 Menit",
-    description:
-      "Latihan ringan untuk membakar lemak dan meningkatkan stamina.",
+    excerpt: "Latihan kardio singkat untuk membakar lemak secara efektif.",
+    content: `
+Latihan kardio selama 20 menit dapat memberikan manfaat besar bagi kesehatan jantung
+dan pembakaran kalori. Kardio membantu meningkatkan detak jantung, melatih paru-paru,
+serta mempercepat metabolisme tubuh.
+
+Beberapa contoh latihan kardio sederhana:
+- Jumping jack
+- Jogging di tempat
+- High knees
+- Burpees ringan
+
+Lakukan latihan ini secara konsisten minimal 3–5 kali seminggu untuk hasil optimal.
+    `,
     category: "olahraga",
     image:
       "https://d1vbn70lmn1nqe.cloudfront.net/prod/wp-content/uploads/2021/06/15012412/kesehatan-olahraga.jpg.webp",
+    created_at: "2025-01-10T08:30:00Z",
   },
   {
     id: "sport-2",
     title: "Stretching Pagi Hari",
-    description: "Membantu tubuh lebih fleksibel dan mengurangi cedera.",
+    excerpt: "Peregangan pagi membantu tubuh lebih siap beraktivitas.",
+    content: `
+Stretching pagi hari sangat penting untuk mengurangi risiko cedera,
+meningkatkan fleksibilitas otot, dan melancarkan peredaran darah.
+
+Lakukan stretching ringan selama 5–10 menit sebelum memulai aktivitas,
+terutama jika kamu banyak duduk atau berolahraga intens.
+    `,
     category: "olahraga",
     image:
       "https://www.neorheumacyl.com/public/files/Yuk-Praktikkan-10-Menit-Gerakan-Stretching-Di-Pagi-Hari.jpg",
+    created_at: "2025-01-12T06:45:00Z",
   },
   {
     id: "health-1",
     title: "Manfaat Tidur Cukup",
-    description: "Tidur berkualitas membantu metabolisme dan fokus.",
+    excerpt: "Tidur cukup membantu metabolisme dan kesehatan mental.",
+    // description: "Tidur berkualitas membantu metabolisme dan fokus.",
+    content: `
+Tidur yang cukup (7–9 jam per malam) berperan penting dalam menjaga
+keseimbangan hormon, memperbaiki sel tubuh, dan meningkatkan fokus.
+
+Kurang tidur dapat menyebabkan:
+- Berat badan naik
+- Konsentrasi menurun
+- Sistem imun melemah
+    `,
     category: "kesehatan",
     image:
       "https://d1vbn70lmn1nqe.cloudfront.net/prod/wp-content/uploads/2021/10/25025409/manfaat-istirahat-yang-cukup-dan-cara-memperolehnya-halodoc.jpg",
+    created_at: "2025-01-05T22:00:00Z",
   },
   {
     id: "health-2",
     title: "Minum Air yang Cukup",
-    description: "Menjaga hidrasi penting untuk fungsi organ tubuh.",
+    excerpt: "Hidrasi cukup sangat penting untuk fungsi tubuh.",
+    // description: "Menjaga hidrasi penting untuk fungsi organ tubuh.",
+    content: `
+Air berperan penting dalam hampir semua fungsi tubuh, termasuk
+pencernaan, sirkulasi darah, dan pengaturan suhu tubuh.
+
+Disarankan minum minimal 8 gelas air per hari atau menyesuaikan
+dengan aktivitas fisik dan kondisi tubuh.
+    `,
     category: "kesehatan",
     image:
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTs9Ii6ieinLXJDEtOfLXhiBYkFoViS337l3g&s",
+    created_at: "2025-01-08T09:15:00Z",
   },
   {
     id: "food-1",
     title: "Salad Sayur Rendah Kalori",
-    description: "Pilihan makanan sehat untuk diet dan pencernaan.",
+    excerpt: "Menu sehat untuk diet dan pencernaan.",
+    // description: "Pilihan makanan sehat untuk diet dan pencernaan.",
+    content: `
+Salad sayur kaya akan serat, vitamin, dan mineral yang baik
+untuk sistem pencernaan dan menjaga berat badan.
+
+Gunakan dressing rendah lemak agar kalori tetap terkontrol.
+    `,
     category: "makanan_sehat",
     image:
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRvq8gI9i1hz6NXP70ZW3jzIYWCyXOo3Agt7Q&s",
+    created_at: "2025-01-14T12:00:00Z",
   },
   {
     id: "food-2",
     title: "Menu Sarapan Tinggi Protein",
-    description: "Membantu kenyang lebih lama dan menjaga energi.",
+    excerpt: "Sarapan protein membantu kenyang lebih lama.",
+    // description: "Membantu kenyang lebih lama dan menjaga energi.",
+    content: `
+Sarapan tinggi protein membantu menjaga massa otot dan
+meningkatkan rasa kenyang sepanjang hari.
+
+Contoh menu:
+- Telur rebus
+- Greek yogurt
+- Oat dengan kacang-kacangan
+    `,
     category: "makanan_sehat",
     image:
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5e2pqwjakw5IvjYLc39tmYxZXIoc1f3OfGw&s",
+    created_at: "2025-01-15T07:00:00Z",
   },
 ];
 
@@ -116,9 +176,11 @@ interface Pagination {
 interface ArticleItem {
   id: string;
   title: string;
-  description: string;
   category: "olahraga" | "kesehatan" | "makanan_sehat";
   image: string;
+  excerpt: string;
+  content: string;
+  created_at: string;
 }
 
 interface RecipeResponse {
@@ -150,6 +212,11 @@ export default function LibraryPage() {
   const [selectedRecipe, setSelectedRecipe] = useState<RecipeItem | null>(null);
   const [isDetailModal, setIsDetailModal] = useState<boolean>(false);
   const [isSaveModalOpen, setIsSaveModalOpen] = useState<boolean>(false);
+
+  const [selectedArticle, setSelectedArticle] = useState<ArticleItem | null>(
+    null
+  );
+  const [isArticleModalOpen, setIsArticleModalOpen] = useState(false);
 
   // Fetch recipes dari API
   const { data, isLoading, refetch } = useQuery<RecipeResponse>({
@@ -319,6 +386,10 @@ export default function LibraryPage() {
           filteredArticles.map((article) => (
             <div
               key={article.id}
+              onClick={() => {
+                setSelectedArticle(article);
+                setIsArticleModalOpen(true);
+              }}
               className="bg-white dark:bg-darkCard rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700"
             >
               <div className="h-32 relative">
@@ -339,7 +410,7 @@ export default function LibraryPage() {
                   {article.title}
                 </h4>
                 <p className="text-[10px] text-gray-500 mt-1 line-clamp-2">
-                  {article.description}
+                  {article.excerpt}
                 </p>
               </div>
             </div>
@@ -438,6 +509,15 @@ export default function LibraryPage() {
           }}
           defaultLabel={selectedRecipe.title}
           servings={selectedRecipe.servings}
+        />
+      )}
+      {selectedArticle && isArticleModalOpen && (
+        <ArticleDetailModal
+          article={selectedArticle}
+          onClose={() => {
+            setIsArticleModalOpen(false);
+            setSelectedArticle(null);
+          }}
         />
       )}
     </div>
@@ -580,3 +660,63 @@ const ModalDetailMenu = ({
     </div>
   );
 };
+
+interface ArticleDetailModalProps {
+  article: ArticleItem;
+  onClose: () => void;
+}
+
+function ArticleDetailModal({ article, onClose }: ArticleDetailModalProps) {
+  return (
+    <div className="fixed inset-0 z-[90] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+      <div className="bg-white dark:bg-darkCard rounded-3xl w-full max-w-md p-6 shadow-2xl relative animate-bounce-in  max-h-[90vh] overflow-y-auto ">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-400"
+        >
+          <Icon icon={faTimes} className="text-xl" />
+        </button>
+
+        {/* Header Image */}
+        <div className="h-44 bg-gray-200 mt-4">
+          <img
+            src={article.image}
+            alt={article.title}
+            className="w-full h-full object-cover"
+          />
+        </div>
+
+        {/* Content */}
+        <div className="py-5">
+          <h3 className="text-lg font-bold dark:text-white mb-1">
+            {article.title}
+          </h3>
+          <p className="text-xs text-gray-400 mb-4">
+            {new Date(article.created_at).toLocaleDateString("id-ID", {
+              weekday: "long",
+              month: "short",
+              year: "numeric",
+              minute: "2-digit",
+              hour: "2-digit",
+            })}
+          </p>
+
+          <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+            {article.content}
+          </p>
+
+          <button
+            onClick={onClose}
+            className="
+              mt-6 w-full py-2 rounded-xl
+              bg-primary text-white font-semibold
+              active:scale-95 transition
+            "
+          >
+            Tutup
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
