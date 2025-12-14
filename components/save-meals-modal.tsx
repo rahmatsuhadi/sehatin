@@ -53,7 +53,7 @@ export default function SaveMealModal({
     register,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting: isSubmit },
   } = useForm<SaveMealForm>({
     defaultValues: {
       meal_type: "lunch",
@@ -99,6 +99,7 @@ export default function SaveMealModal({
       customToast("Gagal menyimpan data.", "error");
     },
   });
+  const isSubmitting = isSubmit || mutation.isPending;
 
   const onSubmit: SubmitHandler<SaveMealForm> = (data) => mutation.mutate(data);
 
@@ -136,7 +137,7 @@ export default function SaveMealModal({
               <option value="snack">Snack</option>
             </select>
             {errors.meal_type && (
-              <span className="text-red-500 text-xs">
+              <span className="error-message">
                 {errors.meal_type.message as string}
               </span>
             )}
@@ -155,7 +156,7 @@ export default function SaveMealModal({
               className="w-full mt-1 p-2 border rounded-lg"
             />
             {errors.label && (
-              <span className="text-red-500 text-xs">
+              <span className="error-message">
                 {errors.label.message as string}
               </span>
             )}
@@ -175,7 +176,7 @@ export default function SaveMealModal({
               className="w-full mt-1 p-2 border rounded-lg"
             />
             {errors.eaten_at && (
-              <span className="text-red-500 text-xs">
+              <span className="error-message">
                 {errors.eaten_at.message as string}
               </span>
             )}
@@ -188,7 +189,6 @@ export default function SaveMealModal({
             </label>
             <input
               type="number"
-              min={1}
               disabled={isSubmitting}
               {...register("servings_made", {
                 required: "Jumlah porsi wajib diisi",
@@ -198,7 +198,7 @@ export default function SaveMealModal({
               className="w-full mt-1 p-2 border rounded-lg"
             />
             {errors.servings_made && (
-              <span className="text-red-500 text-xs">
+              <span className="error-message">
                 {errors.servings_made.message as string}
               </span>
             )}
@@ -216,7 +216,7 @@ export default function SaveMealModal({
               placeholder="Opsional (misal: tambah sambal, kurang asin, dsb)"
             ></textarea>
             {errors.notes && (
-              <span className="text-red-500 text-xs">
+              <span className="error-message">
                 {errors.notes.message as string}
               </span>
             )}

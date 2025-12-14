@@ -21,6 +21,7 @@ import {
 import Image from "next/image";
 import SaveMealModal from "@/components/save-meals-modal";
 import { ArrowRight } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // =======================================================
 // INTERFACES
@@ -154,11 +155,35 @@ export default function LibraryPage() {
 
       {/* Content */}
       <div className="grid grid-cols-2 md:grid-cols-3  gap-4 pt-2">
-        {isLoading && (
-          <div className="col-span-full text-gray-400 dark:text-gray-500 text-center py-10">
-            Memuat resep...
-          </div>
-        )}
+        {isLoading &&
+          Array(4)
+            .fill(null)
+            .map((ite, i) => (
+              <div
+                key={i}
+                className="bg-white dark:bg-darkCard rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700 cursor-pointer active:scale-[0.97] transition"
+              >
+                <div className="h-32 bg-gray-200 relative">
+                  <Skeleton className="w-full h-full" />
+                  <Skeleton className="absolute h-3 w-10 bg-gray-200 top-2 right-2 px-2 py-1 rounded-lg backdrop-blur" />
+                </div>
+                <div className="p-3">
+                  {/* <h4 className="font-bold text-xs dark:text-white line-clamp-2"> */}
+                  {/* {item.title} */}
+                  <Skeleton className="w-[60%] h-3 mb-2" />
+                  {/* </h4> */}
+                  {/* <p className="text-[10px] text-gray-500 mt-1 line-clamp-2"> */}
+                  <Skeleton className="w-[100%] h-2" />
+                  <Skeleton className="w-[100%] h-2 mt-1" />
+
+                  {/* </p> */}
+                  {/* <p className="text-[10px] text-gray-500 mt-1"> */}
+                  {/* Kalori: {item.calories_per_serving_kcal} kcal */}
+                  <Skeleton className="mt-1 h-2 w-[30%]" />
+                  {/* </p> */}
+                </div>
+              </div>
+            ))}
 
         {!isLoading && items.length === 0 && (
           <div className="col-span-full text-gray-400 dark:text-gray-500 text-center py-10">
